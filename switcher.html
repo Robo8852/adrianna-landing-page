@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Altar Within — Variation Switcher</title>
+<script>
+  window.VARIATIONS = [
+    { key: "1", label: "Faithful",  file: "http://localhost:3000", blurb: "Sage, cream, navy — closest to the reference" },
+    { key: "2", label: "Editorial", file: "http://localhost:3001", blurb: "Magazine masthead, drop cap, ochre rules" },
+    { key: "3", label: "Earthy",    file: "http://localhost:3002", blurb: "Bauhaus primitives in terracotta + bone" },
+    { key: "4", label: "Cosmic",    file: "http://localhost:3003", blurb: "Midnight starfield with gold astrolabe" },
+    { key: "5", label: "Spa",       file: "http://localhost:3004", blurb: "Soft organic blobs, sage + blush" },
+  ];
+
+  window.THEME = {
+    projectName: "The Altar Within",
+    bgStage: "#0a0a0a",
+    accent: "#AE8D4F",
+    serif: "'Playfair Display', Georgia, serif",
+    sans: "'Inter', system-ui, sans-serif",
+  };
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg-stage);
+    color: #fff;
+    overflow: hidden;
+  }
+  iframe {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--bg-stage);
+  }
+
+  /* Tiny brand badge in the top-left corner */
+  .brand-badge {
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    z-index: 20;
+    font-family: var(--serif);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(15, 15, 15, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+    user-select: none;
+  }
+  .brand-badge em {
+    color: var(--accent);
+    font-style: normal;
+    margin: 0 4px;
+  }
+
+  /* Floating centered pill switcher */
+  .pill {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(15, 15, 15, 0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    user-select: none;
+  }
+
+  .pill button.arrow {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 22px;
+    line-height: 1;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+    font-family: var(--sans);
+  }
+  .pill button.arrow:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .pill button.arrow:active {
+    transform: scale(0.94);
+  }
+
+  .pill .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    min-width: 160px;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .pill .info .label {
+    font-family: var(--serif);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: #fff;
+  }
+  .pill .info .index {
+    margin-top: 3px;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .pill .info .index b {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Optional small blurb tooltip above pill on hover */
+  .pill .blurb {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 15, 15, 0.92);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 8px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .pill:hover .blurb { opacity: 1; }
+
+  .empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-direction: column;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--serif);
+    text-align: center;
+    padding: 32px;
+  }
+</style>
+
+<div class="brand-badge" id="brand"></div>
+
+<iframe id="frame" title="Design variation"></iframe>
+
+<div class="pill" role="group" aria-label="Variation switcher">
+  <div class="blurb" id="blurb"></div>
+  <button class="arrow" id="prev" aria-label="Previous variation" title="Previous (←)">&lsaquo;</button>
+  <div class="info">
+    <span class="label" id="label">—</span>
+    <span class="index"><b id="cur">1</b> / <span id="total">5</span></span>
+  </div>
+  <button class="arrow" id="next" aria-label="Next variation" title="Next (→)">&rsaquo;</button>
+</div>
+
+<script>
+  const T = window.THEME;
+  const V = window.VARIATIONS || [];
+  const root = document.documentElement;
+  root.style.setProperty('--bg-stage', T.bgStage);
+  root.style.setProperty('--accent', T.accent);
+  root.style.setProperty('--serif', T.serif);
+  root.style.setProperty('--sans', T.sans);
+
+  document.getElementById('brand').innerHTML =
+    T.projectName.replace(/·/g, '<em>·</em>').replace(/—/g, '<em>—</em>');
+
+  const frame = document.getElementById('frame');
+  const labelEl = document.getElementById('label');
+  const curEl = document.getElementById('cur');
+  const totalEl = document.getElementById('total');
+  const blurbEl = document.getElementById('blurb');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+
+  totalEl.textContent = V.length;
+
+  let current = 0;
+
+  function select(i) {
+    if (!V.length) return;
+    current = (i + V.length) % V.length; // wrap-around
+    const v = V[current];
+    frame.src = v.file;
+    labelEl.textContent = v.label;
+    curEl.textContent = current + 1;
+    blurbEl.textContent = v.blurb || '';
+    document.title = `${v.label} — The Altar Within`;
+  }
+
+  prevBtn.addEventListener('click', () => select(current - 1));
+  nextBtn.addEventListener('click', () => select(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key >= '1' && e.key <= '9') {
+      const idx = parseInt(e.key, 10) - 1;
+      if (idx < V.length) select(idx);
+    } else if (e.key === 'ArrowRight') {
+      select(current + 1);
+    } else if (e.key === 'ArrowLeft') {
+      select(current - 1);
+    }
+  });
+
+  if (!V.length) {
+    document.body.innerHTML = '<div class="empty">No variations defined.</div>';
+  } else {
+    select(0);
+  }
+</script>
+</html>

@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink-green: #0B3B36;
+  --gold: #C9A961;
+  --gold-warm: #D9BE7E;
+  --parchment: #F3EEDA;
+  --shadow: #061F1C;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--ink-green);
+  color: var(--parchment);
+  font-family: var(--font-eb-garamond), Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(201, 169, 97, 0.6) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .altar-reveal,
+  .altar-sigil-reveal,
+  .altar-rule {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .altar-sigil-path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  .altar-mote {
+    display: none !important;
+  }
+}
