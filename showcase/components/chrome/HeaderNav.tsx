@@ -240,12 +240,8 @@ export function HeaderNav() {
           onClick={() => setMenuOpen(true)}
           aria-label="Open menu"
           aria-expanded={menuOpen}
-          className="sm:hidden"
+          className="flex sm:hidden flex-col items-center justify-center"
           style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
             gap: "4px",
             background: "transparent",
             border: "none",
