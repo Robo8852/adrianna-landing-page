@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { Sigil } from "@/components/primitives/Sigil";
 import { useScrolled } from "@/lib/hooks/useScrolled";
 
@@ -40,9 +41,97 @@ export function HeaderNav() {
   const pathname = usePathname();
   const scrolled = useScrolled(80);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
 
   const isHome = pathname === "/";
   const isAbout = pathname === "/about" || pathname.startsWith("/about/");
+
+  const overlay = menuOpen ? (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        backgroundColor: "var(--ink-green)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: "1rem",
+          border: "1px solid rgba(201,169,97,0.18)",
+          pointerEvents: "none",
+        }}
+      />
+      <button
+        type="button"
+        onClick={() => setMenuOpen(false)}
+        aria-label="Close menu"
+        style={{
+          position: "absolute",
+          top: "1.25rem",
+          right: "1.5rem",
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          fontFamily: "var(--font-cormorant), Georgia, serif",
+          fontSize: "1.5rem",
+          color: "var(--gold-warm)",
+          padding: "0.5rem",
+          lineHeight: 1,
+        }}
+      >
+        ×
+      </button>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1.5rem",
+        }}
+      >
+        <Link
+          href="/"
+          onClick={() => setMenuOpen(false)}
+          style={mobileBrassPlaqueStyle}
+        >
+          Home
+        </Link>
+        <Link
+          href="/about"
+          onClick={() => setMenuOpen(false)}
+          style={mobileBrassPlaqueStyle}
+        >
+          About
+        </Link>
+        <Link
+          href="/#newsletter"
+          onClick={() => setMenuOpen(false)}
+          style={mobileBrassPlaqueStyle}
+        >
+          Newsletter
+        </Link>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <header
@@ -190,81 +279,7 @@ export function HeaderNav() {
           />
         </button>
       </nav>
-
-      {/* Mobile overlay */}
-      {menuOpen ? (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-            backgroundColor: "var(--ink-green)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              inset: "1rem",
-              border: "1px solid rgba(201,169,97,0.18)",
-              pointerEvents: "none",
-            }}
-          />
-          <button
-            type="button"
-            onClick={() => setMenuOpen(false)}
-            aria-label="Close menu"
-            style={{
-              position: "absolute",
-              top: "1.25rem",
-              right: "1.5rem",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "1.5rem",
-              color: "var(--gold-warm)",
-              padding: "0.5rem",
-              lineHeight: 1,
-            }}
-          >
-            ×
-          </button>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "1.5rem",
-            }}
-          >
-            <Link
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              style={mobileBrassPlaqueStyle}
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMenuOpen(false)}
-              style={mobileBrassPlaqueStyle}
-            >
-              About
-            </Link>
-            <Link
-              href="/#newsletter"
-              onClick={() => setMenuOpen(false)}
-              style={mobileBrassPlaqueStyle}
-            >
-              Newsletter
-            </Link>
-          </div>
-        </div>
-      ) : null}
+      {mounted && overlay ? createPortal(overlay, document.body) : null}
     </header>
   );
 }
