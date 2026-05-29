@@ -36,14 +36,6 @@ export default function Hero() {
           }
         }
 
-        @keyframes altar-stroke-draw {
-          from {
-            stroke-dashoffset: 1400;
-          }
-          to {
-            stroke-dashoffset: 0;
-          }
-        }
 
         @keyframes altar-rule-extend {
           from {
@@ -87,11 +79,6 @@ export default function Hero() {
           animation: altar-rule-extend 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
 
-        .altar-sigil-path {
-          stroke-dasharray: 1400;
-          stroke-dashoffset: 1400;
-          animation: altar-stroke-draw 2.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-        }
 
         .altar-mote {
           position: absolute;
@@ -153,7 +140,7 @@ export default function Hero() {
         className="relative z-[5] mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 py-48 text-center"
         style={{ fontFamily: "var(--font-eb-garamond), Georgia, serif" }}
       >
-        {/* Sigil — hand-authored quatrefoil cross */}
+        {/* Sigil — vector trace of the official brand mark */}
         <div className="altar-sigil-reveal" style={{ animationDelay: "0.05s" }}>
           <Sigil />
         </div>

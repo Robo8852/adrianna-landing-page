@@ -32,6 +32,20 @@ body {
   outline-offset: 2px !important;
 }
 
+/* Brand sigil draw-on: each centerline stroke inks itself in.
+   Per-stroke dash length / delay / duration are set inline by the Sigil. */
+@keyframes altar-sigil-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.altar-sigil-trace {
+  animation-name: altar-sigil-draw;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  animation-fill-mode: forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -49,7 +63,8 @@ body {
     animation: none !important;
   }
 
-  .altar-sigil-path {
+  .altar-sigil-path,
+  .altar-sigil-trace {
     stroke-dashoffset: 0 !important;
     animation: none !important;
   }

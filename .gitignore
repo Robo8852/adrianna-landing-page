@@ -34,3 +34,6 @@ huashu-design/
 
 # Vercel
 .vercel/
+
+# Logo vectorization working files (intermediate crops/bitmaps/SVGs)
+.logo-trace/
