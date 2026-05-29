@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { GoldRule } from "@/components/primitives/GoldRule";
 
 export default function A1() {
   return (
     <section
       style={{
-        padding: "8rem 1.5rem 6rem",
+        padding: "8rem 1.5rem 1.5rem",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -28,6 +29,19 @@ export default function A1() {
         About Adrianna Naílah
       </h1>
       <GoldRule width="8rem" />
+      <Image
+        src="/bio-pic.jpg"
+        alt="Adrianna Naílah"
+        width={958}
+        height={991}
+        priority
+        sizes="(max-width: 480px) 72vw, 320px"
+        style={{
+          display: "block",
+          width: "min(320px, 72vw)",
+          height: "auto",
+        }}
+      />
     </section>
   );
 }

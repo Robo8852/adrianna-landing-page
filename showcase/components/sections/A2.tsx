@@ -9,7 +9,7 @@ export default function A2() {
   return (
     <section
       style={{
-        padding: "5rem 1.5rem",
+        padding: "1rem 1.5rem 5rem",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
