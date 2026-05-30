@@ -276,7 +276,7 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 
 ---
 
-### Step 5.2 — Production env + Convex deploy (document + first deploy)  [ ]
+### Step 5.2 — Production env + Convex deploy (document + first deploy)  [x]
 
 **Prerequisites:** 5.1
 **Inputs:** `convex-spec.md` §6
@@ -287,9 +287,9 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 - For the first cut (spec default = manual): run `npx convex deploy` to push functions to the prod Convex deployment. Document wiring it into the Vercel build command (`npx convex deploy --cmd 'npm run build'`) as a follow-up before relying on auto-deploy.
 
 **Acceptance criteria:**
-- [ ] Vercel has `NEXT_PUBLIC_CONVEX_URL` for preview + production.
-- [ ] `npx convex deploy` succeeds; prod deployment has `subscribers` + `subscribe`.
-- [ ] A preview submission writes a row to the prod (or preview) deployment as configured.
+- [x] Vercel has `NEXT_PUBLIC_CONVEX_URL` for preview + production.
+- [x] `npx convex deploy` succeeds; prod deployment has `subscribers` + `subscribe`.
+- [x] A preview submission writes a row to the prod (or preview) deployment as configured.
 
 **Notes:** This step has user-run pieces (Vercel dashboard, prod deploy). Claude prepares commands + docs; user executes auth-gated parts.
 
@@ -297,7 +297,7 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 
 ## Phase 6 — Spec/docs sync (keep the map honest)
 
-### Step 6.1 — Add `spec/convex.md` domain spec  [ ]
+### Step 6.1 — Add `spec/convex.md` domain spec  [x]
 
 **Prerequisites:** 5.1
 **Inputs:** the other `spec/*.md` for format; `convex-spec.md`
@@ -307,12 +307,12 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 - Write a domain spec in the same What / Where / How format as `spec/composites.md` et al., covering: the `convex/` backend, `subscribers` schema, `subscribe` mutation contract, the `ConvexClientProvider`, the `NewsletterForm` data dependency, env vars, deploy model, and the Resend seam (marked as next phase).
 
 **Acceptance criteria:**
-- [ ] `spec/convex.md` exists and matches the house What/Where/How style.
-- [ ] It documents the mutation contract and the idempotent-dedup behaviour.
+- [x] `spec/convex.md` exists and matches the house What/Where/How style.
+- [x] It documents the mutation contract and the idempotent-dedup behaviour.
 
 ---
 
-### Step 6.2 — Update `spec/readme.md` + `spec/composites.md`  [ ]
+### Step 6.2 — Update `spec/readme.md` + `spec/composites.md`  [x]
 
 **Prerequisites:** 6.1
 **Inputs:** `spec/readme.md`, `spec/composites.md`
@@ -323,13 +323,13 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 - `spec/composites.md`: update the `NewsletterForm` §How — it now calls `useMutation(api.subscribers.subscribe)`, has a `source` prop, pending + failure states; note tests now mock `convex/react`.
 
 **Acceptance criteria:**
-- [ ] readme no longer claims signups are dropped on the floor.
-- [ ] composites.md reflects the new form behaviour + `source` prop + test mocking.
-- [ ] readme table lists `convex.md`.
+- [x] readme no longer claims signups are dropped on the floor.
+- [x] composites.md reflects the new form behaviour + `source` prop + test mocking.
+- [x] readme table lists `convex.md`.
 
 ---
 
-### Step 6.3 — Archive working docs  [ ]
+### Step 6.3 — Archive working docs  [x]
 
 **Prerequisites:** 6.2
 **Inputs:** `convex-spec.md`, `convex-imp.md`
@@ -339,8 +339,8 @@ This plan is executed by **orchestrated subagents**, not a single linear pass. T
 - Once all steps are `[x]`, move `convex-spec.md` and `convex-imp.md` into `finished-implementations/` (matching the existing `SPEC.md` / `imp.md` precedent).
 
 **Acceptance criteria:**
-- [ ] Both docs live in `finished-implementations/` with all steps checked.
-- [ ] `spec/convex.md` remains the durable source of truth in the map.
+- [x] Both docs live in `finished-implementations/` with all steps checked.
+- [x] `spec/convex.md` remains the durable source of truth in the map.
 
 ---
 

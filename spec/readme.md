@@ -20,7 +20,7 @@ illuminated-manuscript look, with subtle scroll-reveal and a draw-on brand sigil
 - **Stack:** Next.js 16 (Turbopack) · React 19.2 · TypeScript · Tailwind CSS 3 · framer-motion.
 - **App code lives in `showcase/`** (the repo root also holds docs, design assets, and this `spec/` folder).
 - **`@` path alias → `showcase/`** (see `showcase/tsconfig.json`).
-- **No backend yet.** The only interactive feature (newsletter signup) is client-only — see the gap note below.
+- **One backend domain (Convex).** The only interactive feature (newsletter signup) persists to a Convex `subscribers` table via a `subscribe` mutation — see [`convex.md`](./convex.md). Everything else is static/presentational.
 
 ---
 
@@ -53,6 +53,7 @@ tooling governs how all of the above is run, linted, tested, built, and deployed
 | [`app-shell.md`](./app-shell.md) | App Router skeleton: root layout, fonts, metadata, `template.tsx` route fade, page composition | adding a route, changing fonts/metadata, page transitions, reordering sections |
 | [`sections.md`](./sections.md) | The 11 page narrative blocks (`Hero`, `A1–A5`, `H4–H8`) + page→section mapping | editing page content/layout, adding or reordering a section |
 | [`composites.md`](./composites.md) | Mid-level building blocks (cards, rows, **NewsletterForm**) + chrome (HeaderNav, Footer) | the signup form, header/nav, footer, pricing/pillar/credential cards |
+| [`convex.md`](./convex.md) | The Convex backend: `subscribers` schema, `subscribe` mutation, `ConvexClientProvider`, env/deploy model, Resend seam | persisting signups, the mutation contract, the Convex client, env vars, deploying the backend |
 | [`primitives.md`](./primitives.md) | Smallest visual atoms (`Sigil`, `GoldRule`, `SectionHeading`, `DropCap`, marks) + `ui/button` | the brand sigil, dividers, headings, decorative marks, the base button |
 | [`styling.md`](./styling.md) | Design language: color/font **tokens**, Tailwind theme, `cn()` helper | colors, fonts, spacing tokens, adding a theme value |
 | [`hooks.md`](./hooks.md) | `useReveal` (scroll reveal) and `useScrolled` (scroll threshold) | scroll-reveal animation, sticky-on-scroll header behavior |
@@ -73,10 +74,11 @@ tooling governs how all of the above is run, linted, tested, built, and deployed
 
 ## ⚠️ Known gaps / state of the world (read before promising features work)
 
-- **NewsletterForm does not persist or send anything.** On submit it runs a local email-regex check, then flips
-  React state to a "thank-you" message. There is **no API route, no database, no email integration** — every
-  submitted address is **discarded on reload**. A **Convex** backend is planned (branch `feat/convex-backend`)
-  but not built. See `composites.md`.
+- **NewsletterForm persists, but sends no email yet.** On valid submit it calls the Convex `subscribe` mutation,
+  which stores the address in the `subscribers` table (idempotent — duplicates are silently deduped). What is
+  **not** built: **no email is sent** (welcome/opt-in/admin). That is the **Resend phase**, present only as a
+  documented seam in `convex/subscribers.ts`. Also still unwired: `convex deploy` into the Vercel build command
+  (prod backend deploy is manual for now). See `convex.md` and `composites.md`.
 - **Placeholder copy in chrome:** `Footer.tsx` ships a placeholder `[email]` mailto. Real contact details TBD.
 - **Sigil edits are fiddly:** the brand `Sigil` uses ~25 stroke-dashoffset draw-on paths; changing a path's `d`
   requires recomputing its dash length. Backups exist (`Sigil.filled.bak.tsx`, `Sigil.handcoded.bak.tsx`). See `primitives.md`.

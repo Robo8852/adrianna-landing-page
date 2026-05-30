@@ -9,7 +9,8 @@
 - Fits the system as the outermost frame: `layout.tsx` wraps every route, `template.tsx` wraps every route's children with a re-mounting transition, and each `page.tsx` is just an ordered list of section components.
 
 ## Where
-- `showcase/app/layout.tsx` — Root layout (Server Component). Defines fonts, exports `metadata`, renders `<html>/<body>` with persistent `<HeaderNav />` + `{children}` + `<Footer />`. Imports `./globals.css`.
+- `showcase/app/layout.tsx` — Root layout (Server Component). Defines fonts, exports `metadata`, renders `<html>/<body>` with persistent `<HeaderNav />` + `{children}` + `<Footer />`, all wrapped in `<ConvexClientProvider>` (the `"use client"` Convex boundary — see `spec/convex.md`). Imports `./globals.css`.
+- `showcase/app/ConvexClientProvider.tsx` — thin `"use client"` provider mounted in `layout.tsx`; constructs the `ConvexReactClient` once at module scope and supplies it to the tree so `NewsletterForm` can reach the backend. Detail in `spec/convex.md`.
 - `showcase/app/template.tsx` — Route transition wrapper (Client Component, `"use client"`). Re-mounts on every navigation and applies an opacity fade. Uses `framer-motion` + `usePathname` + `useReducedMotion`.
 - `showcase/app/page.tsx` — Home route `/` (Server Component). Renders `<main>` with sections in order: `Hero, H4, H5, H6, H7, H8`.
 - `showcase/app/about/page.tsx` — About route `/about` (Server Component). Renders `<main>` with sections in order: `A1, A2, A3, A4, A5`.
