@@ -40,3 +40,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Build-time smoke test only: ConvexClientProvider constructs the client
+          # at module scope, so a value must be present or prerender throws. The real
+          # public URL is injected by Vercel for actual deploys; CI never connects.
+          NEXT_PUBLIC_CONVEX_URL: https://placeholder.convex.cloud
