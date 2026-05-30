@@ -3,6 +3,7 @@ import { Cormorant_Garamond, EB_Garamond } from "next/font/google";
 import "./globals.css";
 import { HeaderNav } from "@/components/chrome/HeaderNav";
 import { Footer } from "@/components/chrome/Footer";
+import { ConvexClientProvider } from "@/app/ConvexClientProvider";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -33,9 +34,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${ebGaramond.variable}`}>
       <body>
-        <HeaderNav />
-        {children}
-        <Footer />
+        <ConvexClientProvider>
+          <HeaderNav />
+          {children}
+          <Footer />
+        </ConvexClientProvider>
       </body>
     </html>
   );

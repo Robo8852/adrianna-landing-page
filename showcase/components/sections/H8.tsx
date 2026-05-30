@@ -44,7 +44,7 @@ export default function H8() {
         Join the newsletter for reflections, practices, and announcements from
         Adrianna.
       </p>
-      <NewsletterForm />
+      <NewsletterForm source="h8" />
       <p
         style={{
           margin: 0,

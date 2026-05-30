@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useState, type CSSProperties, type FormEvent } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { GoldRule } from "@/components/primitives/GoldRule";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -9,6 +11,7 @@ export interface NewsletterFormProps {
   buttonLabel?: string;
   compact?: boolean;
   className?: string;
+  source?: string;
 }
 
 const visuallyHidden: CSSProperties = {
@@ -27,22 +30,34 @@ export function NewsletterForm({
   buttonLabel = "Join the Vespers",
   compact = false,
   className,
+  source = "unknown",
 }: NewsletterFormProps = {}) {
   const inputId = useId();
   const errorId = useId();
 
+  const subscribe = useMutation(api.subscribers.subscribe);
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [pending, setPending] = useState(false);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!EMAIL_RE.test(email.trim())) {
       setError("a valid email, please");
       return;
     }
     setError(null);
-    setSubmitted(true);
+    setPending(true);
+    try {
+      await subscribe({ email: email.trim(), source });
+      setSubmitted(true);
+    } catch {
+      setError("the ink did not take — try again");
+    } finally {
+      setPending(false);
+    }
   }
 
   const maxW = compact ? "22rem" : "28rem";
@@ -102,6 +117,7 @@ export function NewsletterForm({
         placeholder="your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        disabled={pending}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
         style={{
@@ -122,6 +138,7 @@ export function NewsletterForm({
       />
       <button
         type="submit"
+        disabled={pending}
         style={{
           backgroundColor: "transparent",
           color: "var(--gold-warm)",
@@ -135,7 +152,8 @@ export function NewsletterForm({
           height: "auto",
           boxShadow: "inset 0 0 0 1px rgba(201,169,97,0.18)",
           transition: "background-color 350ms ease, color 350ms ease",
-          cursor: "pointer",
+          opacity: pending ? 0.6 : 1,
+          cursor: pending ? "default" : "pointer",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = "rgba(201,169,97,0.08)";
