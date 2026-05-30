@@ -74,10 +74,12 @@ describe("NewsletterForm", () => {
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledTimes(1);
-    expect(mockSubscribe).toHaveBeenCalledWith({
-      email: "me@example.com",
-      source: "unknown",
-    });
+    expect(mockSubscribe).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: "me@example.com",
+        source: "unknown",
+      }),
+    );
   });
 
   it("passes a custom source through to subscribe", async () => {
@@ -91,10 +93,12 @@ describe("NewsletterForm", () => {
     await user.click(screen.getByRole("button", { name: /join the vespers/i }));
 
     await screen.findByText(/inscribed/i);
-    expect(mockSubscribe).toHaveBeenCalledWith({
-      email: "me@example.com",
-      source: "footer",
-    });
+    expect(mockSubscribe).toHaveBeenCalledWith(
+      expect.objectContaining({
+        email: "me@example.com",
+        source: "footer",
+      }),
+    );
   });
 
   it("shows an error when the subscribe call rejects", async () => {
@@ -144,5 +148,70 @@ describe("NewsletterForm", () => {
     expect(
       screen.getByRole("button", { name: /subscribe/i }),
     ).toBeInTheDocument();
+  });
+
+  it("sends a numeric timing signal on a valid submit", async () => {
+    const user = userEvent.setup();
+    render(<NewsletterForm />);
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "me@example.com",
+    );
+    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+
+    await screen.findByText(/inscribed/i);
+    expect(mockSubscribe).toHaveBeenCalledTimes(1);
+    const payload = mockSubscribe.mock.calls[0][0];
+    expect(typeof payload.elapsedMs).toBe("number");
+  });
+
+  it("sends an honeypot signal on a valid submit", async () => {
+    const user = userEvent.setup();
+    render(<NewsletterForm />);
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "me@example.com",
+    );
+    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+
+    await screen.findByText(/inscribed/i);
+    expect(mockSubscribe).toHaveBeenCalledTimes(1);
+    const payload = mockSubscribe.mock.calls[0][0];
+    expect("hp" in payload).toBe(true);
+    expect(typeof payload.hp).toBe("string");
+  });
+
+  it("renders the honeypot field hidden and non-tab-reachable", () => {
+    const { container } = render(<NewsletterForm />);
+
+    const honeypot = container.querySelector<HTMLInputElement>(
+      'input[name="company"]',
+    );
+    expect(honeypot).not.toBeNull();
+    expect(honeypot).toHaveAttribute("tabIndex", "-1");
+    expect(honeypot).toHaveAttribute("aria-hidden", "true");
+
+    // it must not be reachable by an accessible-name query (no visible label)
+    expect(
+      screen.queryByRole("textbox", { name: /company/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("forwards a hero source through to subscribe", async () => {
+    const user = userEvent.setup();
+    render(<NewsletterForm source="hero" />);
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "me@example.com",
+    );
+    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+
+    await screen.findByText(/inscribed/i);
+    expect(mockSubscribe).toHaveBeenCalledWith(
+      expect.objectContaining({ source: "hero" }),
+    );
   });
 });

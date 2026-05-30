@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as messages from "../messages.js";
+import type * as rateLimits from "../rateLimits.js";
 import type * as subscribers from "../subscribers.js";
 
 import type {
@@ -17,6 +19,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  messages: typeof messages;
+  rateLimits: typeof rateLimits;
   subscribers: typeof subscribers;
 }>;
 
@@ -46,4 +50,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
+};

@@ -14,11 +14,9 @@ import { GoldRule } from "@/components/primitives/GoldRule";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-export interface NewsletterFormProps {
-  buttonLabel?: string;
-  compact?: boolean;
-  className?: string;
+export interface ContactFormProps {
   source?: string;
+  className?: string;
 }
 
 const visuallyHidden: CSSProperties = {
@@ -33,18 +31,38 @@ const visuallyHidden: CSSProperties = {
   border: 0,
 };
 
-export function NewsletterForm({
-  buttonLabel = "Join the Vespers",
-  compact = false,
-  className,
+const fieldStyle = (hasError: boolean, pending: boolean): CSSProperties => ({
+  backgroundColor: "transparent",
+  border: hasError
+    ? "1px solid rgba(217,190,126,0.85)"
+    : "1px solid rgba(201,169,97,0.35)",
+  color: "var(--parchment)",
+  fontFamily: "var(--font-eb-garamond), Georgia, serif",
+  fontStyle: "italic",
+  letterSpacing: "0.04em",
+  padding: "0.85rem 1rem",
+  borderRadius: 0,
+  outline: "none",
+  fontSize: "0.95rem",
+  width: "100%",
+  opacity: pending ? 0.6 : 1,
+  cursor: pending ? "default" : undefined,
+});
+
+export function ContactForm({
   source = "unknown",
-}: NewsletterFormProps = {}) {
-  const inputId = useId();
+  className,
+}: ContactFormProps = {}) {
+  const nameId = useId();
+  const emailId = useId();
+  const messageId = useId();
   const errorId = useId();
 
-  const subscribe = useMutation(api.subscribers.subscribe);
+  const submitContact = useMutation(api.messages.submitContact);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [hp, setHp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -61,12 +79,23 @@ export function NewsletterForm({
       setError("a valid email, please");
       return;
     }
+    if (!message.trim()) {
+      setError("a few words, please");
+      return;
+    }
     const elapsedMs =
       renderedAt.current === null ? undefined : Date.now() - renderedAt.current;
     setError(null);
     setPending(true);
     try {
-      await subscribe({ email: email.trim(), source, hp, elapsedMs });
+      await submitContact({
+        email: email.trim(),
+        message: message.trim(),
+        name: name.trim() || undefined,
+        source,
+        hp,
+        elapsedMs,
+      });
       setSubmitted(true);
     } catch {
       setError("the ink did not take — try again");
@@ -74,8 +103,6 @@ export function NewsletterForm({
       setPending(false);
     }
   }
-
-  const maxW = compact ? "22rem" : "28rem";
 
   if (submitted) {
     return (
@@ -86,7 +113,7 @@ export function NewsletterForm({
           flexDirection: "column",
           alignItems: "center",
           gap: "1rem",
-          maxWidth: maxW,
+          maxWidth: "28rem",
           margin: "0 auto",
         }}
       >
@@ -115,16 +142,13 @@ export function NewsletterForm({
       className={className}
       style={{
         display: "flex",
-        flexDirection: compact ? "row" : "column",
-        gap: compact ? "0.5rem" : "0.75rem",
-        maxWidth: maxW,
+        flexDirection: "column",
+        gap: "0.75rem",
+        maxWidth: "28rem",
         margin: "0 auto",
         width: "100%",
       }}
     >
-      <label htmlFor={inputId} style={visuallyHidden}>
-        Email address
-      </label>
       <div aria-hidden="true" style={visuallyHidden}>
         <input
           name="company"
@@ -136,8 +160,25 @@ export function NewsletterForm({
           aria-hidden="true"
         />
       </div>
+
+      <label htmlFor={nameId} style={visuallyHidden}>
+        Name (optional)
+      </label>
       <input
-        id={inputId}
+        id={nameId}
+        type="text"
+        placeholder="your name (optional)"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        disabled={pending}
+        style={fieldStyle(false, pending)}
+      />
+
+      <label htmlFor={emailId} style={visuallyHidden}>
+        Email address
+      </label>
+      <input
+        id={emailId}
         type="email"
         required
         placeholder="your email"
@@ -146,22 +187,29 @@ export function NewsletterForm({
         disabled={pending}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
+        style={fieldStyle(!!error, pending)}
+      />
+
+      <label htmlFor={messageId} style={visuallyHidden}>
+        Message
+      </label>
+      <textarea
+        id={messageId}
+        required
+        rows={5}
+        placeholder="your message"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        disabled={pending}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? errorId : undefined}
         style={{
-          flex: 1,
-          backgroundColor: "transparent",
-          border: error
-            ? "1px solid rgba(217,190,126,0.85)"
-            : "1px solid rgba(201,169,97,0.35)",
-          color: "var(--parchment)",
-          fontFamily: "var(--font-eb-garamond), Georgia, serif",
+          ...fieldStyle(!!error, pending),
+          resize: "vertical",
           fontStyle: "italic",
-          letterSpacing: "0.04em",
-          padding: compact ? "0.6rem 0.8rem" : "0.85rem 1rem",
-          borderRadius: 0,
-          outline: "none",
-          fontSize: compact ? "0.9rem" : "0.95rem",
         }}
       />
+
       <button
         type="submit"
         disabled={pending}
@@ -173,8 +221,8 @@ export function NewsletterForm({
           fontFamily: "var(--font-cormorant), Georgia, serif",
           letterSpacing: "0.32em",
           textTransform: "uppercase",
-          fontSize: compact ? "0.7rem" : "0.78rem",
-          padding: compact ? "0.6rem 1.2rem" : "0.85rem 1.6rem",
+          fontSize: "0.78rem",
+          padding: "0.85rem 1.6rem",
           height: "auto",
           boxShadow: "inset 0 0 0 1px rgba(201,169,97,0.18)",
           transition: "background-color 350ms ease, color 350ms ease",
@@ -190,8 +238,9 @@ export function NewsletterForm({
           e.currentTarget.style.color = "var(--gold-warm)";
         }}
       >
-        {buttonLabel}
+        Send
       </button>
+
       {error ? (
         <p
           id={errorId}

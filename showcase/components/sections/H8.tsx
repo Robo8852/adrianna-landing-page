@@ -2,6 +2,7 @@
 
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { NewsletterForm } from "@/components/composites/NewsletterForm";
+import { ContactForm } from "@/components/composites/ContactForm";
 
 export default function H8() {
   return (
@@ -45,28 +46,30 @@ export default function H8() {
         Adrianna.
       </p>
       <NewsletterForm source="h8" />
-      <p
+      <div
+        id="contact"
         style={{
-          margin: 0,
-          fontFamily: "var(--font-eb-garamond), Georgia, serif",
-          fontStyle: "italic",
-          fontSize: "1rem",
-          color: "var(--parchment)",
-          opacity: 0.85,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1.5rem",
+          width: "100%",
         }}
       >
-        Prefer to write directly?{" "}
-        <a
-          href="mailto:[email]"
+        <p
           style={{
-            color: "var(--gold-warm)",
-            textDecoration: "underline",
-            textUnderlineOffset: "0.2em",
+            margin: 0,
+            fontFamily: "var(--font-eb-garamond), Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "1rem",
+            color: "var(--parchment)",
+            opacity: 0.85,
           }}
         >
-          [email]
-        </a>
-      </p>
+          Prefer to write directly?
+        </p>
+        <ContactForm source="contact-h8" />
+      </div>
     </section>
   );
 }

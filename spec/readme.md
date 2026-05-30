@@ -79,7 +79,7 @@ tooling governs how all of the above is run, linted, tested, built, and deployed
   **not** built: **no email is sent** (welcome/opt-in/admin). That is the **Resend phase**, present only as a
   documented seam in `convex/subscribers.ts`. Also still unwired: `convex deploy` into the Vercel build command
   (prod backend deploy is manual for now). See `convex.md` and `composites.md`.
-- **Placeholder copy in chrome:** `Footer.tsx` ships a placeholder `[email]` mailto. Real contact details TBD.
+- **Contact affordance (no more placeholders):** the former `[email]` mailto placeholders are gone. The H8 section hosts a wired `ContactForm` (persisting to the `messages` table via `api.messages.submitContact`) under `id="contact"`, and `Footer.tsx` links to it with `<Link href="/#contact">`. See `convex.md`, `composites.md`, `sections.md`.
 - **Sigil edits are fiddly:** the brand `Sigil` uses ~25 stroke-dashoffset draw-on paths; changing a path's `d`
   requires recomputing its dash length. Backups exist (`Sigil.filled.bak.tsx`, `Sigil.handcoded.bak.tsx`). See `primitives.md`.
 

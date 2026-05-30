@@ -2,9 +2,11 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
 
-export const subscribe = mutation({
+export const submitContact = mutation({
   args: {
     email: v.string(),
+    message: v.string(),
+    name: v.optional(v.string()),
     source: v.optional(v.string()),
     hp: v.optional(v.string()),
     elapsedMs: v.optional(v.number()),
@@ -16,25 +18,28 @@ export const subscribe = mutation({
     if (typeof args.elapsedMs === "number" && args.elapsedMs < 1500) return { ok: true };
 
     const email = args.email.trim().toLowerCase();
+    const message = args.message.trim();
     const source = args.source ?? "unknown";
 
     // rate-limit (opaque: spam paths return { ok: true })
-    // FUTURE (resend-spec): add subscribeDaily ~80–100/day global to guard Resend 100/day free tier
-    const pe = await limiter.limit(ctx, "subscribePerEmail", { key: email });
-    const g  = await limiter.limit(ctx, "subscribeGlobal");
-    const gh = await limiter.limit(ctx, "subscribeGlobalHr");
+    const pe = await limiter.limit(ctx, "contactPerEmail", { key: email });
+    const g  = await limiter.limit(ctx, "contactGlobal");
+    const gh = await limiter.limit(ctx, "contactGlobalHr");
     if (!pe.ok || !g.ok || !gh.ok) return { ok: true };
 
+    // validate (the only non-opaque rejects)
     if (!EMAIL_RE.test(email)) throw new Error("invalid email");
+    if (!message) throw new Error("empty message");
 
-    const existing = await ctx.db
-      .query("subscribers")
-      .withIndex("by_email", (q) => q.eq("email", email))
-      .unique();
-    if (existing) return { ok: true };
+    await ctx.db.insert("messages", {
+      email,
+      message,
+      name: args.name?.trim() || undefined,
+      source,
+      createdAt: Date.now(),
+    });
 
-    // FUTURE (Resend phase): ctx.scheduler.runAfter(0, internal.emails.sendWelcome, { email })
-    await ctx.db.insert("subscribers", { email, createdAt: Date.now(), source });
+    // FUTURE (resend-spec): notify Adrianna of new message
 
     return { ok: true };
   },
