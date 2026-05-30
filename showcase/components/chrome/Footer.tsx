@@ -19,7 +19,7 @@ export function Footer() {
     >
       <GoldRule width="6rem" />
       <MottoLine />
-      <NewsletterForm compact />
+      <NewsletterForm compact source="footer" />
       <p
         style={{
           margin: 0,

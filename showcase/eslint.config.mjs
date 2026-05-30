@@ -3,7 +3,12 @@ import next from "eslint-config-next";
 const eslintConfig = [
   // Global ignores (must be its own object with only `ignores`)
   {
-    ignores: [".next/**", "node_modules/**", "**/*.bak.tsx"],
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "**/*.bak.tsx",
+      "convex/_generated/**",
+    ],
   },
   ...next,
   {

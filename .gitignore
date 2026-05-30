@@ -37,3 +37,5 @@ huashu-design/
 
 # Logo vectorization working files (intermediate crops/bitmaps/SVGs)
 .logo-trace/
+.vercel
+.env*.local
