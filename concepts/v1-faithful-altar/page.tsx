@@ -228,7 +228,7 @@ export default function FaithfulAltarHero() {
             letterSpacing: "0.02em",
           }}
         >
-          Transpersonal Psychotherapist&nbsp;·&nbsp;Psychedelic Integration Specialist&nbsp;·&nbsp;Conscious Leadership Mentor
+          Traditional Psychology&nbsp;•&nbsp;Spiritual Direction&nbsp;•&nbsp;Conservative Counseling
         </p>
 
         {/* Practitioner subline */}
