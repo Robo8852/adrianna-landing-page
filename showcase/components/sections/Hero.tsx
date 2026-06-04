@@ -206,7 +206,7 @@ export default function Hero() {
             letterSpacing: "0.04em",
           }}
         >
-          with Adrianna Naílah
+          with Judith Adrianna Naílah
         </p>
 
         {/* Brief positioning */}

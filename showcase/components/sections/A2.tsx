@@ -20,7 +20,7 @@ export default function A2() {
 
       <div style={{ maxWidth: "34rem", width: "100%" }}>
         <DropCap>
-          Adrianna Naílah&apos;s journey is one of profound transformation and
+          Judith Adrianna Naílah&apos;s journey is one of profound transformation and
           deep challenges — from finding resilience amid soul wounds, chaos, and
           early fragmentation, to rediscovering her ancient original faith and
           shaping her purpose through the adversities she endured since
