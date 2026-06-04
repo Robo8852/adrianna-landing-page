@@ -4,6 +4,7 @@ import H5 from "@/components/sections/H5";
 import H6 from "@/components/sections/H6";
 import H7 from "@/components/sections/H7";
 import H8 from "@/components/sections/H8";
+import { NewsletterModal } from "@/components/composites/NewsletterModal";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <H6 />
       <H7 />
       <H8 />
+      <NewsletterModal triggerDepth={0} />
     </main>
   );
 }
