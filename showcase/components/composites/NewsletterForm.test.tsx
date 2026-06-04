@@ -20,7 +20,7 @@ describe("NewsletterForm", () => {
     render(<NewsletterForm />);
     expect(screen.getByPlaceholderText("your email")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /join the vespers/i }),
+      screen.getByRole("button", { name: /subscribe to our newsletter/i }),
     ).toBeInTheDocument();
   });
 
@@ -29,7 +29,7 @@ describe("NewsletterForm", () => {
     render(<NewsletterForm />);
 
     await user.type(screen.getByPlaceholderText("your email"), "not-an-email");
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       /a valid email, please/i,
@@ -41,7 +41,7 @@ describe("NewsletterForm", () => {
     render(<NewsletterForm />);
 
     await user.type(screen.getByPlaceholderText("your email"), "not-an-email");
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(mockSubscribe).not.toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "adrianna@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     expect(await screen.findByText(/inscribed/i)).toBeInTheDocument();
     // form is replaced by the confirmation, so the input is gone
@@ -70,7 +70,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "  me@example.com  ",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledTimes(1);
@@ -88,7 +88,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "me@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledWith({
@@ -106,7 +106,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "adrianna@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     expect(
       await screen.findByText(/the ink did not take — try again/i),
@@ -126,7 +126,7 @@ describe("NewsletterForm", () => {
     render(<NewsletterForm />);
 
     const input = screen.getByPlaceholderText("your email");
-    const button = screen.getByRole("button", { name: /join the vespers/i });
+    const button = screen.getByRole("button", { name: /subscribe to our newsletter/i });
 
     await user.type(input, "adrianna@example.com");
     await user.click(button);

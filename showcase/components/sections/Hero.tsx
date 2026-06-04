@@ -277,7 +277,7 @@ export default function Hero() {
               e.currentTarget.style.color = "var(--gold-warm)";
             }}
           >
-            Join the Vespers
+            Subscribe to Our Newsletter
           </Button>
         </form>
       </section>

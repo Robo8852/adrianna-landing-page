@@ -27,7 +27,7 @@ const visuallyHidden: CSSProperties = {
 };
 
 export function NewsletterForm({
-  buttonLabel = "Join the Vespers",
+  buttonLabel = "Subscribe to Our Newsletter",
   compact = false,
   className,
   source = "unknown",
