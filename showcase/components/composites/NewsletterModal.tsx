@@ -170,7 +170,7 @@ export function NewsletterModal({
                   style={{
                     ...bodyText,
                     fontStyle: "italic",
-                    fontSize: "1.05rem",
+                    fontSize: "1.4rem",
                     opacity: 0.95,
                   }}
                 >
