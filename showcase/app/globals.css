@@ -46,6 +46,25 @@ body {
   animation-fill-mode: forwards;
 }
 
+/* Center star of the draw-on sigil: inks in first via a quick fade + scale. */
+@keyframes altar-sigil-star-in {
+  from {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.altar-sigil-star {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: altar-sigil-star-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -66,6 +85,12 @@ body {
   .altar-sigil-path,
   .altar-sigil-trace {
     stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+
+  .altar-sigil-star {
+    opacity: 1 !important;
+    transform: none !important;
     animation: none !important;
   }
 
