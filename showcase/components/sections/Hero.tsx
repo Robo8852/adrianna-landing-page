@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Sigil } from "@/components/primitives/Sigil";
+import { SigilDraw } from "@/components/primitives/SigilDraw";
 
 export default function Hero() {
   return (
@@ -140,9 +140,9 @@ export default function Hero() {
         className="relative z-[5] mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 py-48 text-center"
         style={{ fontFamily: "var(--font-eb-garamond), Georgia, serif" }}
       >
-        {/* Sigil — vector trace of the official brand mark */}
-        <div className="altar-sigil-reveal" style={{ animationDelay: "0.05s" }}>
-          <Sigil />
+        {/* Sigil — centerline trace of the official brand mark; inks itself on */}
+        <div>
+          <SigilDraw size={200} />
         </div>
 
         {/* Brand */}

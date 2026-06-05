@@ -39,3 +39,6 @@ huashu-design/
 .logo-trace/
 .vercel
 .env*.local
+
+# local sigil-tracing python venv (not part of the app)
+.sigil-venv/
