@@ -8,7 +8,11 @@ export default defineSchema({
     source: v.string(),
     // Double opt-in state. `undefined` means a legacy row from before the
     // pending flow existed — treated as confirmed (backfill patches these).
-    status: v.optional(v.union(v.literal("pending"), v.literal("confirmed"))),
+    // "unsubscribed" is set by the Resend webhook (P3-11) when Resend reports
+    // the contact unsubscribed; these rows are excluded from future sends.
+    status: v.optional(
+      v.union(v.literal("pending"), v.literal("confirmed"), v.literal("unsubscribed")),
+    ),
     // Set by a Node action after insert (mutations can't generate tokens).
     confirmToken: v.optional(v.string()),
     tokenExpiry: v.optional(v.number()),

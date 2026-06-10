@@ -12,4 +12,13 @@ crons.daily(
   {},
 );
 
+// Contact messages are emailed to the owner on arrival; the DB copy is
+// redundant PII — purge rows older than 180 days.
+crons.daily(
+  "purge old contact messages",
+  { hourUTC: 4, minuteUTC: 30 },
+  internal.maintenance.purgeOldMessages,
+  {},
+);
+
 export default crons;

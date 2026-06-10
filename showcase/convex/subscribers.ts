@@ -39,17 +39,37 @@ export const subscribe = mutation({
       .withIndex("by_email", (q) => q.eq("email", email))
       .unique();
     if (existing) {
-      // Confirmed (or legacy, where undefined means confirmed): opaque dedup.
-      if (existing.status !== "pending") return { ok: true };
-      // Pending re-subscribe: re-send the confirmation, but cooldown-limited
-      // so repeated submits can't turn us into an email cannon.
-      const rl = await limiter.limit(ctx, "confirmResendPerEmail", { key: email });
-      if (rl.ok) {
+      if (existing.status === "pending") {
+        // Pending re-subscribe: re-send the confirmation, but cooldown-limited
+        // so repeated submits can't turn us into an email cannon.
+        const rl = await limiter.limit(ctx, "confirmResendPerEmail", { key: email });
+        if (rl.ok) {
+          await ctx.scheduler.runAfter(0, internal.emails.sendConfirmation, {
+            subscriberId: existing._id,
+            email,
+          });
+        }
+        return { ok: true };
+      }
+
+      if (existing.status === "unsubscribed") {
+        // Re-subscribe after unsubscribe: reset to pending and send a fresh
+        // confirmation. This is intentional — unsubscribing is reversible, and
+        // requiring re-confirmation re-establishes explicit consent.
+        await ctx.db.patch(existing._id, {
+          status: "pending",
+          confirmToken: undefined,
+          tokenExpiry: undefined,
+          source,
+        });
         await ctx.scheduler.runAfter(0, internal.emails.sendConfirmation, {
           subscriberId: existing._id,
           email,
         });
+        return { ok: true };
       }
+
+      // Confirmed (or legacy undefined = confirmed): opaque dedup.
       return { ok: true };
     }
 
@@ -112,6 +132,37 @@ export const confirm = mutation({
     });
 
     return { ok: true as const };
+  },
+});
+
+/**
+ * Called from the Resend webhook httpAction (P3-11) when Resend reports a
+ * contact.updated (unsubscribed=true) or contact.deleted event.
+ *
+ * Status transitions:
+ *   pending    → unsubscribed  (they unsubscribed before confirming — honour it)
+ *   confirmed  → unsubscribed
+ *   unsubscribed → unsubscribed (idempotent)
+ *   undefined (legacy) → unsubscribed
+ *
+ * A missing row is silently ignored — Resend may fire events for addresses
+ * that were never in our system (e.g. imported contacts we removed).
+ */
+export const recordUnsubscribe = internalMutation({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) => {
+    const subscriber = await ctx.db
+      .query("subscribers")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .unique();
+    if (!subscriber) return;
+    await ctx.db.patch(subscriber._id, {
+      status: "unsubscribed",
+      // Clear any pending token — the address should not be confirmable after
+      // an unsubscribe.
+      confirmToken: undefined,
+      tokenExpiry: undefined,
+    });
   },
 });
 

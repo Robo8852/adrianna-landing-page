@@ -148,6 +148,31 @@ describe("subscribers.subscribe", () => {
     expect(await scheduledCalls(t, "sendConfirmation")).toHaveLength(0);
   });
 
+  it("allows an unsubscribed address to re-subscribe: resets to pending and schedules confirmation", async () => {
+    const t = setup();
+    const id = await t.run(async (ctx) =>
+      ctx.db.insert("subscribers", {
+        email: "reader@example.com",
+        createdAt: Date.now(),
+        source: "hero",
+        status: "unsubscribed",
+      }),
+    );
+
+    const res = await t.mutation(api.subscribers.subscribe, VALID_ARGS);
+    expect(res).toEqual({ ok: true });
+
+    // Still only one row — no duplicate inserted.
+    const rows = await allSubscribers(t);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]._id).toBe(id);
+    expect(rows[0].status).toBe("pending");
+    expect(rows[0].confirmToken).toBeUndefined();
+    expect(rows[0].tokenExpiry).toBeUndefined();
+
+    expect(await scheduledCalls(t, "sendConfirmation")).toHaveLength(1);
+  });
+
   it("returns opaque { ok: true } without inserting once the per-email rate limit trips", async () => {
     const t = setup();
 
@@ -333,6 +358,85 @@ describe("subscribers.confirm", () => {
 
     const rows = await allSubscribers(t);
     expect(rows[0].status).toBe("pending");
+  });
+});
+
+describe("subscribers.recordUnsubscribe", () => {
+  it("sets an existing confirmed subscriber to unsubscribed and clears token fields", async () => {
+    const t = setup();
+    const id = await t.run((ctx) =>
+      ctx.db.insert("subscribers", {
+        email: "reader@example.com",
+        createdAt: Date.now(),
+        source: "hero",
+        status: "confirmed",
+      }),
+    );
+
+    await t.mutation(internal.subscribers.recordUnsubscribe, {
+      email: "reader@example.com",
+    });
+
+    const row = await t.run((ctx) => ctx.db.get(id));
+    expect(row?.status).toBe("unsubscribed");
+    expect(row?.confirmToken).toBeUndefined();
+    expect(row?.tokenExpiry).toBeUndefined();
+  });
+
+  it("marks a pending subscriber as unsubscribed and clears any token", async () => {
+    const t = setup();
+    const id = await t.run((ctx) =>
+      ctx.db.insert("subscribers", {
+        email: "reader@example.com",
+        createdAt: Date.now(),
+        source: "hero",
+        status: "pending",
+        confirmToken: "tok-abc",
+        tokenExpiry: Date.now() + 60_000,
+      }),
+    );
+
+    await t.mutation(internal.subscribers.recordUnsubscribe, {
+      email: "reader@example.com",
+    });
+
+    const row = await t.run((ctx) => ctx.db.get(id));
+    expect(row?.status).toBe("unsubscribed");
+    expect(row?.confirmToken).toBeUndefined();
+    expect(row?.tokenExpiry).toBeUndefined();
+  });
+
+  it("is idempotent when already unsubscribed", async () => {
+    const t = setup();
+    await t.run((ctx) =>
+      ctx.db.insert("subscribers", {
+        email: "reader@example.com",
+        createdAt: Date.now(),
+        source: "hero",
+        status: "unsubscribed",
+      }),
+    );
+
+    // Should not throw and state stays unsubscribed.
+    await t.mutation(internal.subscribers.recordUnsubscribe, {
+      email: "reader@example.com",
+    });
+
+    const rows = await allSubscribers(t);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].status).toBe("unsubscribed");
+  });
+
+  it("is a no-op (not an error) for an unknown email", async () => {
+    const t = setup();
+
+    await expect(
+      t.mutation(internal.subscribers.recordUnsubscribe, {
+        email: "ghost@example.com",
+      }),
+    ).resolves.toBeNull();
+
+    expect(await allSubscribers(t)).toHaveLength(0);
   });
 });
 
