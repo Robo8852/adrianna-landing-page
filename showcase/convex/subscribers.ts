@@ -2,6 +2,7 @@ import { mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
+import { LIMITS, NEWSLETTER_SOURCES, normalizeSource } from "./validation";
 
 export const subscribe = mutation({
   args: {
@@ -21,16 +22,17 @@ export const subscribe = mutation({
     if (typeof args.elapsedMs === "number" && args.elapsedMs < 1500) return { ok: true };
 
     const email = args.email.trim().toLowerCase();
-    const source = args.source ?? "unknown";
+    const source = normalizeSource(args.source, NEWSLETTER_SOURCES);
 
     // rate-limit (opaque: spam paths return { ok: true })
-    // FUTURE (resend-spec): add subscribeDaily ~80–100/day global to guard Resend 100/day free tier
     const pe = await limiter.limit(ctx, "subscribePerEmail", { key: email });
     const g  = await limiter.limit(ctx, "subscribeGlobal");
     const gh = await limiter.limit(ctx, "subscribeGlobalHr");
-    if (!pe.ok || !g.ok || !gh.ok) return { ok: true };
+    const d  = await limiter.limit(ctx, "subscribeDaily");
+    if (!pe.ok || !g.ok || !gh.ok || !d.ok) return { ok: true };
 
     if (!EMAIL_RE.test(email)) throw new Error("invalid email");
+    if (email.length > LIMITS.email) throw new Error("email too long");
 
     const existing = await ctx.db
       .query("subscribers")
