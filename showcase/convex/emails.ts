@@ -1,6 +1,7 @@
 "use node";
 
 import { internalAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { redactEmail, sanitizeSubjectName } from "./validation";
 
@@ -96,17 +97,75 @@ export const sendWelcome = internalAction({
   },
 });
 
-// Placeholder for the double opt-in confirmation email (implemented in the
-// next dispatch). Final signature is fixed here so the subscribe mutation can
-// already schedule it; the real body will generate a token, persist it via
-// subscribers.setConfirmationToken, and send the confirmation link.
+// Double opt-in confirmation email. The token is generated here (a Node
+// action) because Convex mutations can't use crypto, and persisted *before*
+// the send — if the email goes out, the link in it must already work.
+const CONFIRM_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 export const sendConfirmation = internalAction({
   args: { subscriberId: v.id("subscribers"), email: v.string() },
-  handler: async (_ctx, { email }) => {
-    console.warn(
-      "sendConfirmation not yet implemented; skipping for",
-      redactEmail(email),
-    );
+  handler: async (ctx, { subscriberId, email }) => {
+    const token = crypto.randomUUID();
+    const tokenExpiry = Date.now() + CONFIRM_TOKEN_TTL_MS;
+
+    // Persist first. setConfirmationToken only patches rows still pending,
+    // so a subscriber who confirmed (or vanished) in the meantime is safe.
+    await ctx.runMutation(internal.subscribers.setConfirmationToken, {
+      subscriberId,
+      token,
+      tokenExpiry,
+    });
+
+    const siteUrl = process.env.SITE_URL ?? "http://localhost:3000";
+    const confirmUrl = `${siteUrl}/confirm?token=${token}`;
+
+    const apiKey = process.env.RESEND_API_KEY;
+    const from =
+      process.env.NEWSLETTER_FROM ??
+      "The Altar Within <letters@the-altar-within.com>";
+
+    // Local dev without keys: skip quietly so signups still work.
+    if (!apiKey) {
+      console.warn(
+        "RESEND_API_KEY not set; skipping confirmation email for",
+        redactEmail(email),
+      );
+      return;
+    }
+
+    // Failure here is logged, not thrown — the pending row and token exist;
+    // the subscriber can simply submit the form again to get a fresh letter.
+    const res = await fetch(`${RESEND_API}/emails`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: email,
+        subject: "One seal remains — confirm your place at The Altar Within",
+        text: [
+          "Your name has been written in pending ink.",
+          "",
+          "One seal remains: confirm that this inscription is yours, and the letters will begin.",
+          "",
+          confirmUrl,
+          "",
+          "The seal holds for seven days. If you did not ask for this, let the ink fade — no letters will follow.",
+          "",
+          "Lux · Veritas · Forma",
+          "The Altar Within",
+        ].join("\n"),
+      }),
+    });
+    if (!res.ok) {
+      console.error(
+        "Resend confirmation send failed:",
+        res.status,
+        redactBody(await res.text()),
+      );
+    }
   },
 });
 

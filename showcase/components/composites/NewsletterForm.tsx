@@ -112,7 +112,8 @@ export function NewsletterForm({
             textAlign: "center",
           }}
         >
-          Inscribed. Your name is on the list — the first letter will find you soon.
+          Inscribed in pending ink. A letter of confirmation is on its way —
+          open it and press the seal to make it permanent.
         </p>
         <GoldRule width="6rem" animate={false} />
       </div>

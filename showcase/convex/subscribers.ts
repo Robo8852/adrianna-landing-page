@@ -75,6 +75,47 @@ export const subscribe = mutation({
 });
 
 /**
+ * Double opt-in confirmation, called from the /confirm route with the token
+ * from the emailed link. Returns a result object (never throws) so the route
+ * can redirect to the right landing state:
+ *   - unknown/missing token → { ok: false, reason: "invalid" }
+ *   - known but past expiry → { ok: false, reason: "expired" }
+ *   - valid → confirm the row, clear the token, send the welcome email
+ * The Resend audience add lives in sendWelcome, so an address only ever
+ * reaches the broadcast list after its owner clicked the link.
+ */
+export const confirm = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    if (token.trim() === "") return { ok: false as const, reason: "invalid" as const };
+
+    const subscriber = await ctx.db
+      .query("subscribers")
+      .withIndex("by_token", (q) => q.eq("confirmToken", token))
+      .unique();
+    if (!subscriber) return { ok: false as const, reason: "invalid" as const };
+
+    if (subscriber.tokenExpiry === undefined || subscriber.tokenExpiry < Date.now()) {
+      return { ok: false as const, reason: "expired" as const };
+    }
+
+    await ctx.db.patch(subscriber._id, {
+      status: "confirmed",
+      confirmToken: undefined,
+      tokenExpiry: undefined,
+    });
+
+    // Scheduled (not awaited) so the Resend API call runs after this
+    // transaction commits — confirmation never fails because email did.
+    await ctx.scheduler.runAfter(0, internal.emails.sendWelcome, {
+      email: subscriber.email,
+    });
+
+    return { ok: true as const };
+  },
+});
+
+/**
  * Called from the sendConfirmation Node action once it has generated a
  * token. Patches only rows still pending — a subscriber who confirmed (or
  * was deleted) between schedule and send is left alone.
