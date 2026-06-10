@@ -7,4 +7,11 @@ export default defineSchema({
     createdAt: v.number(),
     source: v.string(),
   }).index("by_email", ["email"]),
+  messages: defineTable({
+    email: v.string(),
+    message: v.string(),
+    name: v.optional(v.string()),
+    source: v.string(),
+    createdAt: v.number(),
+  }).index("by_email", ["email"]),
 });

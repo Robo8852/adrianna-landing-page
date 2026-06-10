@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { NewsletterForm } from "@/components/composites/NewsletterForm";
 import { SigilDraw } from "@/components/primitives/SigilDraw";
 
 export default function Hero() {
@@ -236,64 +236,12 @@ export default function Hero() {
         </p>
 
         {/* CTA */}
-        <form
-          className="altar-reveal mt-14 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
-          style={{ animationDelay: "3.0s" }}
-          onSubmit={(e) => e.preventDefault()}
+        <div
+          className="altar-reveal mt-14"
+          style={{ animationDelay: "3.0s", width: "100%", maxWidth: "28rem" }}
         >
-          <input
-            type="email"
-            placeholder="your email"
-            aria-label="your email"
-            style={{
-              flex: 1,
-              backgroundColor: "transparent",
-              border: "1px solid rgba(201,169,97,0.35)",
-              color: "var(--parchment)",
-              padding: "0.85rem 1rem",
-              fontFamily: "var(--font-eb-garamond), Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "0.95rem",
-              letterSpacing: "0.04em",
-              outline: "none",
-              borderRadius: 0,
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(201,169,97,0.75)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.border = "1px solid rgba(201,169,97,0.35)";
-            }}
-          />
-          <Button
-            type="submit"
-            variant="ghost"
-            style={{
-              backgroundColor: "transparent",
-              color: "var(--gold-warm)",
-              border: "1px solid var(--gold)",
-              borderRadius: 0,
-              fontFamily: "var(--font-cormorant), Georgia, serif",
-              letterSpacing: "0.32em",
-              textTransform: "uppercase",
-              fontSize: "0.78rem",
-              padding: "0.85rem 1.6rem",
-              height: "auto",
-              boxShadow: "inset 0 0 0 1px rgba(201,169,97,0.18)",
-              transition: "background-color 350ms ease, color 350ms ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "rgba(201,169,97,0.08)";
-              e.currentTarget.style.color = "var(--parchment)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--gold-warm)";
-            }}
-          >
-            Subscribe to Our Newsletter
-          </Button>
-        </form>
+          <NewsletterForm source="hero" />
+        </div>
       </section>
     </section>
   );

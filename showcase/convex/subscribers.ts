@@ -1,25 +1,34 @@
 import { mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+import { EMAIL_RE, limiter } from "./rateLimits";
 
 export const subscribe = mutation({
   args: {
     email: v.string(),
     source: v.optional(v.string()),
-    // Honeypot: a hidden field humans never see. Bots tend to fill every
-    // input, so a non-empty value here is a strong spam signal.
     hp: v.optional(v.string()),
+    elapsedMs: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Spam trap. Enforced server-side because a bot can call this mutation
+    // honeypot: a hidden field humans never see. Bots tend to fill every
+    // input, so a non-empty value here is a strong spam signal.
+    if (args.hp && args.hp.trim() !== "") return { ok: true };
+
+    // timing: enforced server-side because a bot can call this mutation
     // directly without ever rendering the form. Return ok so the bot gets
     // no signal that it was caught, but write nothing.
-    if (args.hp && args.hp.trim() !== "") return { ok: true };
+    if (typeof args.elapsedMs === "number" && args.elapsedMs < 1500) return { ok: true };
 
     const email = args.email.trim().toLowerCase();
     const source = args.source ?? "unknown";
+
+    // rate-limit (opaque: spam paths return { ok: true })
+    // FUTURE (resend-spec): add subscribeDaily ~80–100/day global to guard Resend 100/day free tier
+    const pe = await limiter.limit(ctx, "subscribePerEmail", { key: email });
+    const g  = await limiter.limit(ctx, "subscribeGlobal");
+    const gh = await limiter.limit(ctx, "subscribeGlobalHr");
+    if (!pe.ok || !g.ok || !gh.ok) return { ok: true };
 
     if (!EMAIL_RE.test(email)) throw new Error("invalid email");
 
