@@ -167,6 +167,7 @@ export function ContactForm({
       <input
         id={nameId}
         type="text"
+        maxLength={100}
         placeholder="your name (optional)"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -181,6 +182,7 @@ export function ContactForm({
         id={emailId}
         type="email"
         required
+        maxLength={254}
         placeholder="your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -197,6 +199,7 @@ export function ContactForm({
         id={messageId}
         required
         rows={5}
+        maxLength={5000}
         placeholder="your message"
         value={message}
         onChange={(e) => setMessage(e.target.value)}

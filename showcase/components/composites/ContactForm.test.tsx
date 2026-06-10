@@ -206,6 +206,23 @@ describe("ContactForm", () => {
     expect(await screen.findByText(/inscribed/i)).toBeInTheDocument();
   });
 
+  it("caps the name, email, and message fields with maxLength", () => {
+    render(<ContactForm />);
+
+    expect(screen.getByPlaceholderText("your name (optional)")).toHaveAttribute(
+      "maxLength",
+      "100",
+    );
+    expect(screen.getByPlaceholderText("your email")).toHaveAttribute(
+      "maxLength",
+      "254",
+    );
+    expect(screen.getByPlaceholderText("your message")).toHaveAttribute(
+      "maxLength",
+      "5000",
+    );
+  });
+
   it("renders a hidden honeypot field that is not a reachable labeled input", () => {
     const { container } = render(<ContactForm />);
 

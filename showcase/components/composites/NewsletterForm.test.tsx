@@ -225,6 +225,14 @@ describe("NewsletterForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("caps the email field with maxLength", () => {
+    render(<NewsletterForm />);
+    expect(screen.getByPlaceholderText("your email")).toHaveAttribute(
+      "maxLength",
+      "254",
+    );
+  });
+
   it("forwards a hero source through to subscribe", async () => {
     const user = userEvent.setup();
     render(<NewsletterForm source="hero" />);

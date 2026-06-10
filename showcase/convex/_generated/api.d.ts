@@ -12,6 +12,7 @@ import type * as emails from "../emails.js";
 import type * as messages from "../messages.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as subscribers from "../subscribers.js";
+import type * as validation from "../validation.js";
 
 import type {
   ApiFromModules,
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   rateLimits: typeof rateLimits;
   subscribers: typeof subscribers;
+  validation: typeof validation;
 }>;
 
 /**

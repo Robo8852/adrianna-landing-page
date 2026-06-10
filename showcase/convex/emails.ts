@@ -2,6 +2,7 @@
 
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
+import { redactEmail, sanitizeSubjectName } from "./validation";
 
 // Resend wiring. Runs as an *action* (not a mutation) because it calls an
 // external API — Convex mutations must be pure database transactions.
@@ -14,6 +15,14 @@ import { v } from "convex/values";
 
 const RESEND_API = "https://api.resend.com";
 
+// Redact any email addresses embedded in a Resend error body before logging.
+// We keep status + body because failures are swallowed (never thrown), so the
+// log line is the only debugging signal — it just must not leak addresses.
+const EMAIL_IN_TEXT_RE = /[^\s"@,;<>()[\]]+@[^\s"@,;<>()[\]]+\.[^\s"@,;<>()[\]]+/g;
+function redactBody(text: string): string {
+  return text.replace(EMAIL_IN_TEXT_RE, (match) => redactEmail(match));
+}
+
 export const sendWelcome = internalAction({
   args: { email: v.string() },
   handler: async (_ctx, { email }) => {
@@ -25,7 +34,10 @@ export const sendWelcome = internalAction({
 
     // Local dev without keys: skip quietly so signups still work.
     if (!apiKey) {
-      console.warn("RESEND_API_KEY not set; skipping Resend sync for", email);
+      console.warn(
+        "RESEND_API_KEY not set; skipping Resend sync for",
+        redactEmail(email),
+      );
       return;
     }
 
@@ -44,7 +56,11 @@ export const sendWelcome = internalAction({
         body: JSON.stringify({ email, unsubscribed: false }),
       });
       if (!res.ok) {
-        console.error("Resend contact add failed:", res.status, await res.text());
+        console.error(
+          "Resend contact add failed:",
+          res.status,
+          redactBody(await res.text()),
+        );
       }
     } else {
       console.warn("RESEND_AUDIENCE_ID not set; subscriber not added to audience");
@@ -71,7 +87,11 @@ export const sendWelcome = internalAction({
       }),
     });
     if (!res.ok) {
-      console.error("Resend welcome send failed:", res.status, await res.text());
+      console.error(
+        "Resend welcome send failed:",
+        res.status,
+        redactBody(await res.text()),
+      );
     }
   },
 });
@@ -92,7 +112,10 @@ export const sendContactNotification = internalAction({
 
     // Local dev without keys: skip quietly so submissions still work.
     if (!apiKey) {
-      console.warn("RESEND_API_KEY not set; skipping contact notification for", email);
+      console.warn(
+        "RESEND_API_KEY not set; skipping contact notification for",
+        redactEmail(email),
+      );
       return;
     }
 
@@ -101,11 +124,15 @@ export const sendContactNotification = internalAction({
       "Content-Type": "application/json",
     };
 
+    // Sanitize the visitor-supplied name before it reaches the subject or
+    // body — defense in depth even once writes truncate at the boundary.
+    const safeName = name ? sanitizeSubjectName(name) : "";
+
     // Notify the site owner of the new inquiry. Failure here is logged,
     // not thrown — the submission already succeeded; a missed notification
     // should not look like an error to the visitor.
     const body = [
-      name || "",
+      safeName,
       email,
       source ? `Source: ${source}` : "",
       "",
@@ -119,12 +146,16 @@ export const sendContactNotification = internalAction({
         from,
         to: notifyEmail,
         reply_to: email,
-        subject: `New inquiry from ${name || email} — The Altar Within`,
+        subject: `New inquiry from ${safeName || email} — The Altar Within`,
         text: body,
       }),
     });
     if (!res.ok) {
-      console.error("Resend contact notification send failed:", res.status, await res.text());
+      console.error(
+        "Resend contact notification send failed:",
+        res.status,
+        redactBody(await res.text()),
+      );
     }
   },
 });

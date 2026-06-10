@@ -181,6 +181,7 @@ export function NewsletterForm({
         id={inputId}
         type="email"
         required
+        maxLength={254}
         placeholder="your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
