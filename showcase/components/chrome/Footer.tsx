@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { MottoLine } from "@/components/primitives/MottoLine";
-import { NewsletterForm } from "@/components/composites/NewsletterForm";
 
 export function Footer() {
   return (
@@ -20,7 +19,62 @@ export function Footer() {
     >
       <GoldRule width="6rem" />
       <MottoLine />
-      <NewsletterForm compact source="footer" />
+      <figure
+        style={{
+          margin: 0,
+          maxWidth: "26rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.85rem",
+        }}
+      >
+        <blockquote
+          style={{
+            margin: 0,
+            fontFamily: "var(--font-eb-garamond), Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "1.15rem",
+            color: "var(--parchment)",
+            lineHeight: 1.55,
+          }}
+        >
+          <span
+            style={{
+              color: "var(--gold-warm)",
+              fontSize: "1.5rem",
+              lineHeight: 0,
+              verticalAlign: "-0.2em",
+              marginRight: "0.15em",
+            }}
+          >
+            {"“"}
+          </span>
+          When you see a poor believer, believe that you behold an altar.
+          <span
+            style={{
+              color: "var(--gold-warm)",
+              fontSize: "1.5rem",
+              lineHeight: 0,
+              verticalAlign: "-0.2em",
+              marginLeft: "0.15em",
+            }}
+          >
+            {"”"}
+          </span>
+        </blockquote>
+        <figcaption
+          style={{
+            fontFamily: "var(--font-cormorant), Georgia, serif",
+            fontSize: "0.7rem",
+            letterSpacing: "0.28em",
+            textTransform: "uppercase",
+            color: "var(--gold-warm)",
+          }}
+        >
+          St. John Chrysostom
+        </figcaption>
+      </figure>
       <p
         style={{
           margin: 0,
