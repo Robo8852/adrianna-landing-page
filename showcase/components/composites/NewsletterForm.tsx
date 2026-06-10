@@ -160,6 +160,7 @@ export function NewsletterForm({
           tabIndex={-1}
           autoComplete="off"
           defaultValue=""
+          aria-hidden="true"
         />
       </div>
       <label htmlFor={inputId} style={visuallyHidden}>

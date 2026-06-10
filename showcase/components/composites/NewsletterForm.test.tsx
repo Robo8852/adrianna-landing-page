@@ -184,7 +184,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "me@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledTimes(1);
@@ -200,7 +200,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "me@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledTimes(1);
@@ -233,7 +233,7 @@ describe("NewsletterForm", () => {
       screen.getByPlaceholderText("your email"),
       "me@example.com",
     );
-    await user.click(screen.getByRole("button", { name: /join the vespers/i }));
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
 
     await screen.findByText(/inscribed/i);
     expect(mockSubscribe).toHaveBeenCalledWith(
