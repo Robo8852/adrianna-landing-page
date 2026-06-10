@@ -3,14 +3,44 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useScrollDepth } from "@/lib/hooks/useScrollDepth";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { NewsletterForm } from "@/components/composites/NewsletterForm";
 
 export interface NewsletterModalProps {
-  /** Scroll depth (0–1) that triggers the modal. 0 = fire on first scroll. */
+  /** Scroll depth (0–1) that triggers the modal. Default 0.5 = halfway down. */
   triggerDepth?: number;
+}
+
+/** sessionStorage key remembering that the reader closed the modal. */
+const DISMISSED_KEY = "newsletter-modal-dismissed";
+
+function readDismissed(): boolean {
+  try {
+    return sessionStorage.getItem(DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function persistDismissed(): void {
+  try {
+    sessionStorage.setItem(DISMISSED_KEY, "1");
+  } catch {
+    // Storage unavailable (private mode, etc.) — in-memory state still applies.
+  }
+}
+
+/**
+ * True if the contact section is in (or just below) the viewport — the
+ * reader is at the form, so an interruption would be hostile.
+ */
+function contactInView(): boolean {
+  const contact = document.querySelector("#contact");
+  if (!contact) return false;
+  const rect = contact.getBoundingClientRect();
+  // Small margin below the fold so "almost at the form" also counts.
+  return rect.top < window.innerHeight * 1.15 && rect.bottom > 0;
 }
 
 const BODY_PARAGRAPHS = [
@@ -23,17 +53,48 @@ const BODY_PARAGRAPHS = [
 export function NewsletterModal({
   triggerDepth = 0.5,
 }: NewsletterModalProps = {}) {
-  const reached = useScrollDepth(triggerDepth);
   const isWide = useMediaQuery("(min-width: 820px)");
-  const [dismissed, setDismissed] = useState(false);
+  // A dismissal persists for the whole session (sessionStorage), so the
+  // modal doesn't re-trigger on every navigation or reload.
+  const [dismissed, setDismissed] = useState(
+    () => typeof window !== "undefined" && readDismissed(),
+  );
+  // "pending" until the depth threshold is crossed; then we decide once,
+  // based on where the reader was at that moment.
+  const [decision, setDecision] = useState<"pending" | "show" | "suppress">(
+    "pending",
+  );
   const panelRef = useRef<HTMLDivElement>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
 
-  // No frequency cap: open whenever the reader passes the trigger depth,
-  // every visit, until they close it this session.
-  const open = reached && !dismissed;
+  // Watch scroll depth. The decision is made exactly once, at the moment the
+  // reader genuinely scrolls past `triggerDepth` of the page: show the modal,
+  // unless they're already at/near the contact form — then never interrupt
+  // this visit.
+  useEffect(() => {
+    if (decision !== "pending") return;
 
-  const close = useCallback(() => setDismissed(true), []);
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - doc.clientHeight;
+      // Pages too short to scroll never reach a depth trigger.
+      if (scrollable <= 0) return;
+      const depth = window.scrollY / scrollable;
+      if (window.scrollY > 0 && depth >= triggerDepth) {
+        setDecision(contactInView() ? "suppress" : "show");
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [decision, triggerDepth]);
+
+  const open = decision === "show" && !dismissed;
+
+  const close = useCallback(() => {
+    setDismissed(true);
+    persistDismissed();
+  }, []);
 
   // Focus management + Esc to close while open.
   useEffect(() => {
