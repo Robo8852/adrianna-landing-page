@@ -99,7 +99,7 @@ export function NewsletterModal({
             style={{
               position: "relative",
               width: "100%",
-              maxWidth: isWide ? "60rem" : "32rem",
+              maxWidth: isWide ? "72rem" : "32rem",
               maxHeight: "90vh",
               overflowY: "auto",
               backgroundColor: "var(--ink-green)",

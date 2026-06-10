@@ -173,7 +173,7 @@ export function HeaderNav() {
           <span
             style={{
               fontFamily: "var(--font-cormorant), Georgia, serif",
-              fontSize: "1.15rem",
+              fontSize: "1.5rem",
               color: "var(--parchment)",
               letterSpacing: "0.04em",
             }}

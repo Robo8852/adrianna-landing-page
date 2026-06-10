@@ -174,6 +174,20 @@ export default function Hero() {
           <span style={{ color: "var(--gold)" }}>&nbsp;&nbsp;—</span>
         </p>
 
+        {/* English gloss of the Latin motto */}
+        <p
+          className="altar-reveal mt-2 text-[0.7rem] md:text-xs"
+          style={{
+            fontFamily: "var(--font-cormorant), Georgia, serif",
+            color: "rgba(243,238,218,0.6)",
+            letterSpacing: "0.3em",
+            textTransform: "uppercase",
+            animationDelay: "1.7s",
+          }}
+        >
+          Light&nbsp;·&nbsp;Truth&nbsp;·&nbsp;Form
+        </p>
+
         {/* Hairline divider — extends from center */}
         <div
           className="altar-rule mt-10 h-px w-64"
