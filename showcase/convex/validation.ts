@@ -59,3 +59,32 @@ export function redactEmail(email: string): string {
 export function countUrls(text: string): number {
   return (text.match(/(https?:\/\/|www\.)/gi) ?? []).length;
 }
+
+let warnedMissingSharedSecret = false;
+
+/**
+ * Gateway shared-secret check for the public form mutations (P3-9).
+ *
+ * The Next.js route handlers (/api/subscribe, /api/contact) attach
+ * CONVEX_SHARED_SECRET to every mutation call. A call arriving without the
+ * right secret bypassed the front door (direct Convex client) and is treated
+ * as a bot: the mutation answers an opaque { ok: true } and writes nothing —
+ * same convention as the honeypot/timing/rate-limit paths.
+ *
+ * Fail-open by design when CONVEX_SHARED_SECRET is NOT set on the deployment
+ * (e.g. a fresh dev deployment): the site must not break because an env var
+ * is missing. Logged once per isolate so it is visible in the dashboard.
+ */
+export function sharedSecretOk(provided: string | undefined): boolean {
+  const expected = process.env.CONVEX_SHARED_SECRET;
+  if (!expected) {
+    if (!warnedMissingSharedSecret) {
+      console.warn(
+        "CONVEX_SHARED_SECRET is not set — accepting form mutations without a gateway secret (fail-open)",
+      );
+      warnedMissingSharedSecret = true;
+    }
+    return true;
+  }
+  return provided === expected;
+}

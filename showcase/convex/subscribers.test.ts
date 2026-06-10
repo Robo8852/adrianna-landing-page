@@ -45,6 +45,98 @@ async function scheduledCalls(t: T, needle: string) {
 
 const VALID_ARGS = { email: "reader@example.com", source: "hero", elapsedMs: 4000 };
 
+// The gateway secret (P3-9) fails open when CONVEX_SHARED_SECRET is unset.
+// Pin it to "unset" for every test so a developer's local env (or a loaded
+// .env file) can never flip these suites into fail-closed mode; the dedicated
+// gateway-secret suite below stubs its own value.
+beforeEach(() => vi.stubEnv("CONVEX_SHARED_SECRET", ""));
+afterEach(() => vi.unstubAllEnvs());
+
+describe("subscribers.subscribe gateway secret (P3-9)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.stubEnv("CONVEX_SHARED_SECRET", "test-gateway-secret");
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("no-ops opaquely when the secret is missing", async () => {
+    const t = setup();
+    const res = await t.mutation(api.subscribers.subscribe, VALID_ARGS);
+    expect(res).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(0);
+    expect(await scheduledCalls(t, "sendConfirmation")).toHaveLength(0);
+  });
+
+  it("no-ops opaquely when the secret is wrong", async () => {
+    const t = setup();
+    const res = await t.mutation(api.subscribers.subscribe, {
+      ...VALID_ARGS,
+      secret: "not-the-secret",
+    });
+    expect(res).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(0);
+  });
+
+  it("writes normally when the correct secret is supplied", async () => {
+    const t = setup();
+    const res = await t.mutation(api.subscribers.subscribe, {
+      ...VALID_ARGS,
+      secret: "test-gateway-secret",
+    });
+    expect(res).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(1);
+    expect(await scheduledCalls(t, "sendConfirmation")).toHaveLength(1);
+  });
+
+  it("fails open (still writes) when CONVEX_SHARED_SECRET is unset", async () => {
+    vi.stubEnv("CONVEX_SHARED_SECRET", "");
+    const t = setup();
+    const res = await t.mutation(api.subscribers.subscribe, VALID_ARGS);
+    expect(res).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(1);
+  });
+});
+
+describe("subscribers.subscribe per-IP rate limit (P3-9)", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it("opaquely drops further signups from one ipHash once the bucket is empty", async () => {
+    const t = setup();
+    const ipHash = "a".repeat(64);
+
+    // subscribePerIp has capacity 10. Distinct emails keep the per-email
+    // bucket out of the way; fake timers mean no refill.
+    for (let i = 0; i < 10; i++) {
+      const res = await t.mutation(api.subscribers.subscribe, {
+        ...VALID_ARGS,
+        email: `reader-${i}@example.com`,
+        ipHash,
+      });
+      expect(res).toEqual({ ok: true });
+    }
+    expect(await allSubscribers(t)).toHaveLength(10);
+
+    // Eleventh from the same IP: opaque ok, nothing written.
+    const res = await t.mutation(api.subscribers.subscribe, {
+      ...VALID_ARGS,
+      email: "reader-11@example.com",
+      ipHash,
+    });
+    expect(res).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(10);
+
+    // A different IP is unaffected.
+    const other = await t.mutation(api.subscribers.subscribe, {
+      ...VALID_ARGS,
+      email: "reader-12@example.com",
+      ipHash: "b".repeat(64),
+    });
+    expect(other).toEqual({ ok: true });
+    expect(await allSubscribers(t)).toHaveLength(11);
+  });
+});
+
 describe("subscribers.subscribe", () => {
   // Fake timers keep runAfter(0)-scheduled email actions from actually
   // executing mid-test — we assert on the schedule, not the send.

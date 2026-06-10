@@ -8,6 +8,10 @@ export const limiter = new RateLimiter(components.rateLimiter, {
   subscribeGlobal:   { kind: "token bucket", rate: 25,  period: MINUTE, capacity: 30 },
   subscribeGlobalHr: { kind: "token bucket", rate: 250, period: HOUR,   capacity: 300 },
   subscribePerEmail: { kind: "token bucket", rate: 3,   period: 10 * MINUTE, capacity: 5 },
+  // keyed by the salted sha256 ipHash from the /api/subscribe front door —
+  // slightly looser than per-email because one IP (NAT, offices) can cover
+  // several legitimate people
+  subscribePerIp:    { kind: "token bucket", rate: 6,   period: 10 * MINUTE, capacity: 10 },
   subscribeDaily:    { kind: "token bucket", rate: 200, period: DAY,    capacity: 200 },
   // re-sending the double opt-in confirmation email (per address cooldown)
   confirmResendPerEmail: { kind: "token bucket", rate: 1, period: 10 * MINUTE, capacity: 1 },
@@ -15,5 +19,6 @@ export const limiter = new RateLimiter(components.rateLimiter, {
   contactGlobal:     { kind: "token bucket", rate: 15,  period: MINUTE, capacity: 20 },
   contactGlobalHr:   { kind: "token bucket", rate: 100, period: HOUR,   capacity: 120 },
   contactPerEmail:   { kind: "token bucket", rate: 3,   period: 10 * MINUTE, capacity: 5 },
+  contactPerIp:      { kind: "token bucket", rate: 4,   period: 10 * MINUTE, capacity: 8 },
   contactDaily:      { kind: "token bucket", rate: 50,  period: DAY,    capacity: 50 },
 });

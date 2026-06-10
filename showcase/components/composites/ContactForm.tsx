@@ -8,9 +8,8 @@ import {
   type CSSProperties,
   type FormEvent,
 } from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { GoldRule } from "@/components/primitives/GoldRule";
+import { useTurnstile } from "@/lib/hooks/useTurnstile";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -58,7 +57,9 @@ export function ContactForm({
   const messageId = useId();
   const errorId = useId();
 
-  const submitContact = useMutation(api.messages.submitContact);
+  // Turnstile (P3-10): nothing loads until the user touches the form.
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const { arm, getToken } = useTurnstile(turnstileRef);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -88,14 +89,23 @@ export function ContactForm({
     setError(null);
     setPending(true);
     try {
-      await submitContact({
-        email: email.trim(),
-        message: message.trim(),
-        name: name.trim() || undefined,
-        source,
-        hp,
-        elapsedMs,
+      const turnstileToken = await getToken();
+      // P3-9: submissions go through the /api/contact front door (IP rate
+      // limiting + Turnstile verification), not directly to Convex.
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          message: message.trim(),
+          name: name.trim() || undefined,
+          source,
+          hp,
+          elapsedMs,
+          turnstileToken,
+        }),
       });
+      if (!res.ok) throw new Error("contact failed");
       setSubmitted(true);
     } catch {
       setError("the ink did not take — try again");
@@ -171,6 +181,7 @@ export function ContactForm({
         placeholder="your name (optional)"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        onFocus={arm}
         disabled={pending}
         style={fieldStyle(false, pending)}
       />
@@ -186,6 +197,7 @@ export function ContactForm({
         placeholder="your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        onFocus={arm}
         disabled={pending}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
@@ -243,6 +255,12 @@ export function ContactForm({
       >
         Send
       </button>
+
+      {/*
+        Turnstile mount point. Invisible in interaction-only mode; if
+        Cloudflare escalates to a visible challenge it renders here.
+      */}
+      <div ref={turnstileRef} />
 
       {error ? (
         <p

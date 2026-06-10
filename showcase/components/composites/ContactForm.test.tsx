@@ -1,19 +1,35 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ContactForm } from "./ContactForm";
 
-const { mockSubmit } = vi.hoisted(() => ({ mockSubmit: vi.fn() }));
+// P3-9: the form POSTs to the /api/contact front door instead of calling the
+// Convex mutation directly, so the network seam under test is fetch.
+const mockFetch = vi.fn();
 
-vi.mock("convex/react", () => ({ useMutation: () => mockSubmit }));
-vi.mock("@/convex/_generated/api", () => ({
-  api: { messages: { submitContact: "submitContact" } },
-}));
+function okResponse(body: unknown = { ok: true }) {
+  return { ok: true, status: 200, json: async () => body };
+}
+
+/** Parsed JSON body of the nth fetch call (default: first). */
+function sentPayload(n = 0) {
+  const [, init] = mockFetch.mock.calls[n] as [string, RequestInit];
+  return JSON.parse(init.body as string);
+}
 
 describe("ContactForm", () => {
   beforeEach(() => {
-    mockSubmit.mockReset();
-    mockSubmit.mockResolvedValue({ ok: true });
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValue(okResponse());
+    vi.stubGlobal("fetch", mockFetch);
+    // jsdom cannot run the Cloudflare challenge — make useTurnstile a no-op
+    // even if a sitekey leaks in from the developer's environment.
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "");
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("renders the name, email, message fields and the Send button", () => {
@@ -39,7 +55,7 @@ describe("ContactForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       /a valid email, please/i,
     );
-    expect(mockSubmit).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("shows a validation error and makes no call for an empty message", async () => {
@@ -55,10 +71,10 @@ describe("ContactForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       /a few words, please/i,
     );
-    expect(mockSubmit).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("submits once with trimmed values, default source, and anti-spam fields", async () => {
+  it("POSTs /api/contact once with trimmed values, default source, and anti-spam fields", async () => {
     const user = userEvent.setup();
     render(<ContactForm />);
 
@@ -73,16 +89,15 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send/i }));
 
     await screen.findByText(/inscribed/i);
-    expect(mockSubmit).toHaveBeenCalledTimes(1);
-    expect(mockSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: "me@example.com",
-        message: "a heartfelt note",
-        source: "unknown",
-      }),
-    );
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch.mock.calls[0][0]).toBe("/api/contact");
 
-    const payload = mockSubmit.mock.calls[0][0];
+    const payload = sentPayload();
+    expect(payload).toMatchObject({
+      email: "me@example.com",
+      message: "a heartfelt note",
+      source: "unknown",
+    });
     expect("hp" in payload).toBe(true);
     expect(typeof payload.hp).toBe("string");
     expect(typeof payload.elapsedMs).toBe("number");
@@ -94,7 +109,7 @@ describe("ContactForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("passes a custom source through to submitContact", async () => {
+  it("passes a custom source through to /api/contact", async () => {
     const user = userEvent.setup();
     render(<ContactForm source="contact-h8" />);
 
@@ -109,9 +124,7 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send/i }));
 
     await screen.findByText(/inscribed/i);
-    expect(mockSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ source: "contact-h8" }),
-    );
+    expect(sentPayload()).toMatchObject({ source: "contact-h8" });
   });
 
   it("omits name when left blank", async () => {
@@ -129,8 +142,7 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send/i }));
 
     await screen.findByText(/inscribed/i);
-    const payload = mockSubmit.mock.calls[0][0];
-    expect(payload.name).toBeUndefined();
+    expect(sentPayload().name).toBeUndefined();
   });
 
   it("includes the trimmed name when provided", async () => {
@@ -152,13 +164,36 @@ describe("ContactForm", () => {
     await user.click(screen.getByRole("button", { name: /send/i }));
 
     await screen.findByText(/inscribed/i);
-    expect(mockSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Adrianna" }),
-    );
+    expect(sentPayload()).toMatchObject({ name: "Adrianna" });
   });
 
-  it("shows an error when the submit call rejects", async () => {
-    mockSubmit.mockRejectedValueOnce(new Error("nope"));
+  it("shows an error when the request rejects", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("network down"));
+    const user = userEvent.setup();
+    render(<ContactForm />);
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "adrianna@example.com",
+    );
+    await user.type(
+      screen.getByPlaceholderText("your message"),
+      "hello there",
+    );
+    await user.click(screen.getByRole("button", { name: /send/i }));
+
+    expect(
+      await screen.findByText(/the ink did not take — try again/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/inscribed/i)).not.toBeInTheDocument();
+  });
+
+  it("shows an error when the route answers a non-2xx status", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: async () => ({ ok: false }),
+    });
     const user = userEvent.setup();
     render(<ContactForm />);
 
@@ -179,10 +214,10 @@ describe("ContactForm", () => {
   });
 
   it("disables the email, message, and Send button while pending", async () => {
-    let resolveSubmit!: (value: unknown) => void;
-    mockSubmit.mockReturnValueOnce(
+    let resolveFetch!: (value: unknown) => void;
+    mockFetch.mockReturnValueOnce(
       new Promise((resolve) => {
-        resolveSubmit = resolve;
+        resolveFetch = resolve;
       }),
     );
 
@@ -201,7 +236,7 @@ describe("ContactForm", () => {
     expect(message).toBeDisabled();
     expect(button).toBeDisabled();
 
-    resolveSubmit({ ok: true });
+    resolveFetch(okResponse());
 
     expect(await screen.findByText(/inscribed/i)).toBeInTheDocument();
   });

@@ -2,7 +2,7 @@ import { mutation, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
-import { LIMITS, NEWSLETTER_SOURCES, normalizeSource } from "./validation";
+import { LIMITS, NEWSLETTER_SOURCES, normalizeSource, sharedSecretOk } from "./validation";
 
 export const subscribe = mutation({
   args: {
@@ -10,8 +10,18 @@ export const subscribe = mutation({
     source: v.optional(v.string()),
     hp: v.optional(v.string()),
     elapsedMs: v.optional(v.number()),
+    // Set by the /api/subscribe route handler (P3-9). `secret` proves the call
+    // came through the front door; `ipHash` is a salted sha256 of the caller's
+    // IP for per-IP rate limiting. Both optional so the mutation fails open
+    // when the env var is unset (see sharedSecretOk).
+    secret: v.optional(v.string()),
+    ipHash: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // gateway secret: direct mutation calls that bypassed /api/subscribe are
+    // treated as bots — opaque ok, no write. Fails open if the env var is unset.
+    if (!sharedSecretOk(args.secret)) return { ok: true };
+
     // honeypot: a hidden field humans never see. Bots tend to fill every
     // input, so a non-empty value here is a strong spam signal.
     if (args.hp && args.hp.trim() !== "") return { ok: true };
@@ -29,7 +39,10 @@ export const subscribe = mutation({
     const g  = await limiter.limit(ctx, "subscribeGlobal");
     const gh = await limiter.limit(ctx, "subscribeGlobalHr");
     const d  = await limiter.limit(ctx, "subscribeDaily");
-    if (!pe.ok || !g.ok || !gh.ok || !d.ok) return { ok: true };
+    const ip = args.ipHash
+      ? await limiter.limit(ctx, "subscribePerIp", { key: args.ipHash })
+      : { ok: true };
+    if (!pe.ok || !g.ok || !gh.ok || !d.ok || !ip.ok) return { ok: true };
 
     if (!EMAIL_RE.test(email)) throw new Error("invalid email");
     if (email.length > LIMITS.email) throw new Error("email too long");

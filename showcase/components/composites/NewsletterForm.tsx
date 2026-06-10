@@ -8,9 +8,8 @@ import {
   type CSSProperties,
   type FormEvent,
 } from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { GoldRule } from "@/components/primitives/GoldRule";
+import { useTurnstile } from "@/lib/hooks/useTurnstile";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -44,7 +43,9 @@ export function NewsletterForm({
   const hpId = useId();
   const hpRef = useRef<HTMLInputElement>(null);
 
-  const subscribe = useMutation(api.subscribers.subscribe);
+  // Turnstile (P3-10): nothing loads until the user touches the form.
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const { arm, getToken } = useTurnstile(turnstileRef);
 
   const [email, setEmail] = useState("");
   const [hp, setHp] = useState("");
@@ -77,7 +78,21 @@ export function NewsletterForm({
     setError(null);
     setPending(true);
     try {
-      await subscribe({ email: email.trim(), source, hp, elapsedMs });
+      const turnstileToken = await getToken();
+      // P3-9: submissions go through the /api/subscribe front door (IP rate
+      // limiting + Turnstile verification), not directly to Convex.
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim(),
+          source,
+          hp,
+          elapsedMs,
+          turnstileToken,
+        }),
+      });
+      if (!res.ok) throw new Error("subscribe failed");
       setSubmitted(true);
     } catch {
       setError("the ink did not take — try again");
@@ -186,6 +201,7 @@ export function NewsletterForm({
         placeholder="your email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        onFocus={arm}
         disabled={pending}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
@@ -235,6 +251,11 @@ export function NewsletterForm({
       >
         {buttonLabel}
       </button>
+      {/*
+        Turnstile mount point. Invisible in interaction-only mode; if
+        Cloudflare escalates to a visible challenge it renders here.
+      */}
+      <div ref={turnstileRef} style={{ flexBasis: "100%" }} />
       {error ? (
         <p
           id={errorId}

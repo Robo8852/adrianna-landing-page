@@ -2,7 +2,7 @@ import { mutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
-import { LIMITS, CONTACT_SOURCES, normalizeSource, countUrls } from "./validation";
+import { LIMITS, CONTACT_SOURCES, normalizeSource, countUrls, sharedSecretOk } from "./validation";
 
 /** Window for suppressing duplicate (email, message) submissions. */
 const DUP_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -15,8 +15,13 @@ export const submitContact = mutation({
     source: v.optional(v.string()),
     hp: v.optional(v.string()),
     elapsedMs: v.optional(v.number()),
+    // Set by the /api/contact route handler (P3-9) — see subscribers.subscribe.
+    secret: v.optional(v.string()),
+    ipHash: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // gateway secret: direct calls bypassing /api/contact are treated as bots.
+    if (!sharedSecretOk(args.secret)) return { ok: true };
     // honeypot
     if (args.hp && args.hp.trim() !== "") return { ok: true };
     // timing
@@ -32,7 +37,10 @@ export const submitContact = mutation({
     const g  = await limiter.limit(ctx, "contactGlobal");
     const gh = await limiter.limit(ctx, "contactGlobalHr");
     const d  = await limiter.limit(ctx, "contactDaily");
-    if (!pe.ok || !g.ok || !gh.ok || !d.ok) return { ok: true };
+    const ip = args.ipHash
+      ? await limiter.limit(ctx, "contactPerIp", { key: args.ipHash })
+      : { ok: true };
+    if (!pe.ok || !g.ok || !gh.ok || !d.ok || !ip.ok) return { ok: true };
 
     // validate (the only non-opaque rejects)
     if (!EMAIL_RE.test(email)) throw new Error("invalid email");
