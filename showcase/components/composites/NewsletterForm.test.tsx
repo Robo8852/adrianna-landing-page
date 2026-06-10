@@ -62,6 +62,23 @@ describe("NewsletterForm", () => {
     expect(screen.queryByPlaceholderText("your email")).not.toBeInTheDocument();
   });
 
+  it("tells the subscriber a confirmation email is on its way (double opt-in)", async () => {
+    const user = userEvent.setup();
+    render(<NewsletterForm />);
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "adrianna@example.com",
+    );
+    await user.click(screen.getByRole("button", { name: /subscribe to our newsletter/i }));
+
+    // The success state must not read as "subscribed" — the address is only
+    // pending until the emailed confirmation link is clicked.
+    expect(
+      await screen.findByText(/letter of confirmation is on its way/i),
+    ).toBeInTheDocument();
+  });
+
   it("calls subscribe once with the trimmed email and default source", async () => {
     const user = userEvent.setup();
     render(<NewsletterForm />);
