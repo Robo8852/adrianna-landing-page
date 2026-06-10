@@ -77,6 +77,7 @@ describe("NewsletterForm", () => {
     expect(mockSubscribe).toHaveBeenCalledWith({
       email: "me@example.com",
       source: "unknown",
+      hp: "",
     });
   });
 
@@ -94,6 +95,7 @@ describe("NewsletterForm", () => {
     expect(mockSubscribe).toHaveBeenCalledWith({
       email: "me@example.com",
       source: "footer",
+      hp: "",
     });
   });
 
@@ -137,6 +139,30 @@ describe("NewsletterForm", () => {
     resolveSubscribe({ ok: true });
 
     expect(await screen.findByText(/inscribed/i)).toBeInTheDocument();
+  });
+
+  it("treats a filled honeypot as spam: shows confirmation but never calls subscribe", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<NewsletterForm />);
+
+    // A bot fills the hidden honeypot field along with the email.
+    const honeypot = container.querySelector<HTMLInputElement>(
+      'input[name="company"]',
+    );
+    expect(honeypot).not.toBeNull();
+    honeypot!.value = "spambot inc";
+
+    await user.type(
+      screen.getByPlaceholderText("your email"),
+      "bot@example.com",
+    );
+    await user.click(
+      screen.getByRole("button", { name: /subscribe to our newsletter/i }),
+    );
+
+    // Confirmation is shown (no signal to the bot) but nothing is sent.
+    expect(await screen.findByText(/inscribed/i)).toBeInTheDocument();
+    expect(mockSubscribe).not.toHaveBeenCalled();
   });
 
   it("respects a custom button label", () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type CSSProperties, type FormEvent } from "react";
+import { useId, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { GoldRule } from "@/components/primitives/GoldRule";
@@ -34,6 +34,8 @@ export function NewsletterForm({
 }: NewsletterFormProps = {}) {
   const inputId = useId();
   const errorId = useId();
+  const hpId = useId();
+  const hpRef = useRef<HTMLInputElement>(null);
 
   const subscribe = useMutation(api.subscribers.subscribe);
 
@@ -44,6 +46,15 @@ export function NewsletterForm({
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const hp = hpRef.current?.value ?? "";
+    // Honeypot tripped: a hidden field humans never see has been filled.
+    // Show the normal confirmation so the bot gets no signal, but send nothing.
+    if (hp.trim() !== "") {
+      setSubmitted(true);
+      return;
+    }
+
     if (!EMAIL_RE.test(email.trim())) {
       setError("a valid email, please");
       return;
@@ -51,7 +62,7 @@ export function NewsletterForm({
     setError(null);
     setPending(true);
     try {
-      await subscribe({ email: email.trim(), source });
+      await subscribe({ email: email.trim(), source, hp });
       setSubmitted(true);
     } catch {
       setError("the ink did not take — try again");
@@ -86,7 +97,7 @@ export function NewsletterForm({
             textAlign: "center",
           }}
         >
-          Inscribed. A response will arrive in due time.
+          Inscribed. Your name is on the list — the first letter will find you soon.
         </p>
         <GoldRule width="6rem" animate={false} />
       </div>
@@ -107,6 +118,35 @@ export function NewsletterForm({
         width: "100%",
       }}
     >
+      {/*
+        Honeypot. Hidden from sighted users (off-screen), from assistive tech
+        (aria-hidden), and from keyboard tab order (tabIndex -1). Real people
+        leave it empty; bots that fill every field expose themselves. The value
+        is also re-checked in the subscribe mutation, since a bot can skip the
+        form and hit the backend directly.
+      */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: 0,
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+      >
+        <label htmlFor={hpId}>Company</label>
+        <input
+          id={hpId}
+          ref={hpRef}
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
+        />
+      </div>
       <label htmlFor={inputId} style={visuallyHidden}>
         Email address
       </label>
