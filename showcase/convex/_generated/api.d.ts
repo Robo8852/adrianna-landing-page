@@ -8,8 +8,11 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
 import type * as emails from "../emails.js";
+import type * as maintenance from "../maintenance.js";
 import type * as messages from "../messages.js";
+import type * as migrations from "../migrations.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as subscribers from "../subscribers.js";
 import type * as validation from "../validation.js";
@@ -21,8 +24,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
   emails: typeof emails;
+  maintenance: typeof maintenance;
   messages: typeof messages;
+  migrations: typeof migrations;
   rateLimits: typeof rateLimits;
   subscribers: typeof subscribers;
   validation: typeof validation;

@@ -6,7 +6,16 @@ export default defineSchema({
     email: v.string(),
     createdAt: v.number(),
     source: v.string(),
-  }).index("by_email", ["email"]),
+    // Double opt-in state. `undefined` means a legacy row from before the
+    // pending flow existed — treated as confirmed (backfill patches these).
+    status: v.optional(v.union(v.literal("pending"), v.literal("confirmed"))),
+    // Set by a Node action after insert (mutations can't generate tokens).
+    confirmToken: v.optional(v.string()),
+    tokenExpiry: v.optional(v.number()),
+  })
+    .index("by_email", ["email"])
+    .index("by_token", ["confirmToken"])
+    .index("by_status", ["status"]),
   messages: defineTable({
     email: v.string(),
     message: v.string(),

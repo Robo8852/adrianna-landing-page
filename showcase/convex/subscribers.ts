@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
@@ -38,14 +38,56 @@ export const subscribe = mutation({
       .query("subscribers")
       .withIndex("by_email", (q) => q.eq("email", email))
       .unique();
-    if (existing) return { ok: true };
+    if (existing) {
+      // Confirmed (or legacy, where undefined means confirmed): opaque dedup.
+      if (existing.status !== "pending") return { ok: true };
+      // Pending re-subscribe: re-send the confirmation, but cooldown-limited
+      // so repeated submits can't turn us into an email cannon.
+      const rl = await limiter.limit(ctx, "confirmResendPerEmail", { key: email });
+      if (rl.ok) {
+        await ctx.scheduler.runAfter(0, internal.emails.sendConfirmation, {
+          subscriberId: existing._id,
+          email,
+        });
+      }
+      return { ok: true };
+    }
 
-    await ctx.db.insert("subscribers", { email, createdAt: Date.now(), source });
+    // Double opt-in: the row starts as pending with no token. The token is
+    // generated in the Node action (mutations can't use crypto), which calls
+    // back into setConfirmationToken before sending the confirmation email.
+    const subscriberId = await ctx.db.insert("subscribers", {
+      email,
+      createdAt: Date.now(),
+      source,
+      status: "pending",
+    });
 
     // Scheduled (not awaited) so the Resend API call runs after this
     // transaction commits — the signup never fails because email did.
-    await ctx.scheduler.runAfter(0, internal.emails.sendWelcome, { email });
+    await ctx.scheduler.runAfter(0, internal.emails.sendConfirmation, {
+      subscriberId,
+      email,
+    });
 
     return { ok: true };
+  },
+});
+
+/**
+ * Called from the sendConfirmation Node action once it has generated a
+ * token. Patches only rows still pending — a subscriber who confirmed (or
+ * was deleted) between schedule and send is left alone.
+ */
+export const setConfirmationToken = internalMutation({
+  args: {
+    subscriberId: v.id("subscribers"),
+    token: v.string(),
+    tokenExpiry: v.number(),
+  },
+  handler: async (ctx, { subscriberId, token, tokenExpiry }) => {
+    const subscriber = await ctx.db.get(subscriberId);
+    if (!subscriber || subscriber.status !== "pending") return;
+    await ctx.db.patch(subscriberId, { confirmToken: token, tokenExpiry });
   },
 });

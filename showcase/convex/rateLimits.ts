@@ -9,6 +9,8 @@ export const limiter = new RateLimiter(components.rateLimiter, {
   subscribeGlobalHr: { kind: "token bucket", rate: 250, period: HOUR,   capacity: 300 },
   subscribePerEmail: { kind: "token bucket", rate: 3,   period: 10 * MINUTE, capacity: 5 },
   subscribeDaily:    { kind: "token bucket", rate: 200, period: DAY,    capacity: 200 },
+  // re-sending the double opt-in confirmation email (per address cooldown)
+  confirmResendPerEmail: { kind: "token bucket", rate: 1, period: 10 * MINUTE, capacity: 1 },
   // submitContact (contact form) — lower-volume surface, tighter buckets
   contactGlobal:     { kind: "token bucket", rate: 15,  period: MINUTE, capacity: 20 },
   contactGlobalHr:   { kind: "token bucket", rate: 100, period: HOUR,   capacity: 120 },

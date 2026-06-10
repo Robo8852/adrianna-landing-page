@@ -96,6 +96,20 @@ export const sendWelcome = internalAction({
   },
 });
 
+// Placeholder for the double opt-in confirmation email (implemented in the
+// next dispatch). Final signature is fixed here so the subscribe mutation can
+// already schedule it; the real body will generate a token, persist it via
+// subscribers.setConfirmationToken, and send the confirmation link.
+export const sendConfirmation = internalAction({
+  args: { subscriberId: v.id("subscribers"), email: v.string() },
+  handler: async (_ctx, { email }) => {
+    console.warn(
+      "sendConfirmation not yet implemented; skipping for",
+      redactEmail(email),
+    );
+  },
+});
+
 export const sendContactNotification = internalAction({
   args: {
     email: v.string(),
