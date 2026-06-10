@@ -75,3 +75,56 @@ export const sendWelcome = internalAction({
     }
   },
 });
+
+export const sendContactNotification = internalAction({
+  args: {
+    email: v.string(),
+    message: v.string(),
+    name: v.optional(v.string()),
+    source: v.optional(v.string()),
+  },
+  handler: async (_ctx, { email, message, name, source }) => {
+    const apiKey = process.env.RESEND_API_KEY;
+    const from =
+      process.env.NEWSLETTER_FROM ??
+      "The Altar Within <letters@the-altar-within.com>";
+    const notifyEmail = process.env.CONTACT_NOTIFY_EMAIL ?? "leoreyes@costadelsolweb.com";
+
+    // Local dev without keys: skip quietly so submissions still work.
+    if (!apiKey) {
+      console.warn("RESEND_API_KEY not set; skipping contact notification for", email);
+      return;
+    }
+
+    const headers = {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    };
+
+    // Notify the site owner of the new inquiry. Failure here is logged,
+    // not thrown — the submission already succeeded; a missed notification
+    // should not look like an error to the visitor.
+    const body = [
+      name || "",
+      email,
+      source ? `Source: ${source}` : "",
+      "",
+      message,
+    ].filter(Boolean).join("\n");
+
+    const res = await fetch(`${RESEND_API}/emails`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        from,
+        to: notifyEmail,
+        reply_to: email,
+        subject: `New inquiry from ${name || email} — The Altar Within`,
+        text: body,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Resend contact notification send failed:", res.status, await res.text());
+    }
+  },
+});

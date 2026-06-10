@@ -1,4 +1,5 @@
 import { mutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { EMAIL_RE, limiter } from "./rateLimits";
 
@@ -39,7 +40,14 @@ export const submitContact = mutation({
       createdAt: Date.now(),
     });
 
-    // FUTURE (resend-spec): notify Adrianna of new message
+    // Scheduled (not awaited) so the Resend API call runs after this
+    // transaction commits — the submission never fails because email did.
+    await ctx.scheduler.runAfter(0, internal.emails.sendContactNotification, {
+      email,
+      message,
+      name: args.name?.trim() || undefined,
+      source,
+    });
 
     return { ok: true };
   },
