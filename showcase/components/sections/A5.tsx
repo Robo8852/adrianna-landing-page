@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { ArrowGlyph } from "@/components/primitives/ArrowGlyph";
+import { BookButton } from "@/components/composites/BookButton";
 
 const linkStyle = {
   fontFamily: "var(--font-cormorant), Georgia, serif",
@@ -59,9 +60,7 @@ export default function A5() {
         <span aria-hidden="true" style={{ color: "var(--gold)" }}>
           ·
         </span>
-        <Link href="/#services" style={linkStyle}>
-          Free Intro Call
-        </Link>
+        <BookButton bookingKey="intro" label="Free Intro Call" />
         <span aria-hidden="true" style={{ color: "var(--gold)" }}>
           ·
         </span>
