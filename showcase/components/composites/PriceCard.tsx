@@ -1,6 +1,8 @@
 "use client";
 
 import { GoldRule } from "@/components/primitives/GoldRule";
+import { BookButton } from "@/components/composites/BookButton";
+import type { BookingKey } from "@/lib/calendly";
 
 export interface PriceCardProps {
   name: string;
@@ -8,6 +10,7 @@ export interface PriceCardProps {
   price: string;
   priceNote?: string;
   description: string;
+  bookingKey?: BookingKey;
   className?: string;
 }
 
@@ -17,6 +20,7 @@ export function PriceCard({
   price,
   priceNote,
   description,
+  bookingKey,
   className,
 }: PriceCardProps) {
   return (
@@ -98,6 +102,14 @@ export function PriceCard({
       >
         {description}
       </p>
+      {bookingKey ? (
+        <div style={{ marginTop: "0.5rem" }}>
+          <BookButton
+            bookingKey={bookingKey}
+            label={bookingKey === "intro" ? "Book — Free" : "Book a Session"}
+          />
+        </div>
+      ) : null}
     </article>
   );
 }

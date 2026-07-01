@@ -3,12 +3,23 @@
 import { SectionHeading } from "@/components/primitives/SectionHeading";
 import { PriceCard } from "@/components/composites/PriceCard";
 import { PriceNote } from "@/components/composites/PriceNote";
+import type { BookingKey } from "@/lib/calendly";
 
-const services = [
+interface Service {
+  name: string;
+  duration?: string;
+  price: string;
+  priceNote?: string;
+  description: string;
+  bookingKey: BookingKey;
+}
+
+const services: Service[] = [
   {
     name: "Introductory Meeting",
     duration: "30 minutes",
     price: "Free",
+    bookingKey: "intro",
     description:
       "This introductory call is a space for us to connect and see if we're the right fit for each other. It's a chance for you to share your vision and for me to offer a glimpse of how I work. No pressure — just an open conversation to explore whether we can co-create a journey together.",
   },
@@ -16,6 +27,7 @@ const services = [
     name: "1:1 Psychotherapy Session",
     duration: "60–90 minutes",
     price: "$120",
+    bookingKey: "session",
     description:
       "In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.",
   },
@@ -23,6 +35,7 @@ const services = [
     name: "3-Session Package",
     price: "$270",
     priceNote: "save $90",
+    bookingKey: "package",
     description:
       "This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.",
   },
@@ -30,6 +43,7 @@ const services = [
     name: "Psychotherapy with Coaching",
     duration: "60–90 minutes",
     price: "$200",
+    bookingKey: "coaching",
     description:
       "These sessions combine psychotherapy with a coaching framework for a holistic, action-oriented approach. Ideal for those entering the realm of Conscious Leadership Coaching — empowering creative executives, professionals, and entrepreneurs to harness both self-leadership and collective leadership capacities, with a focus on fostering clarity, optimizing flow, and creating expansive impact.",
   },
@@ -72,6 +86,7 @@ export default function H7() {
             price={s.price}
             priceNote={s.priceNote}
             description={s.description}
+            bookingKey={s.bookingKey}
           />
         ))}
       </div>

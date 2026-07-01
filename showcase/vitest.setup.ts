@@ -2,9 +2,13 @@ import "@testing-library/jest-dom/vitest";
 import { afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 
+// Convex suites run in edge-runtime (see environmentMatchGlobs), where there
+// is no `window` — all the DOM shims below are jsdom-only.
+const hasDom = typeof window !== "undefined";
+
 // jsdom does not implement matchMedia; several hooks (e.g. useReveal) rely on
 // it for prefers-reduced-motion. Provide a minimal stub so components render.
-if (!window.matchMedia) {
+if (hasDom && !window.matchMedia) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
@@ -18,7 +22,7 @@ if (!window.matchMedia) {
 }
 
 // jsdom also lacks IntersectionObserver, which useReveal uses to trigger.
-if (!("IntersectionObserver" in window)) {
+if (hasDom && !("IntersectionObserver" in window)) {
   class MockIntersectionObserver {
     observe = vi.fn();
     unobserve = vi.fn();

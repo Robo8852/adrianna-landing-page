@@ -27,8 +27,29 @@ export default function H4() {
           maxWidth: "32rem",
         }}
       >
-        Maybe you are searching among the branches for what only appears in the
-        roots.
+        <span
+          style={{
+            color: "var(--gold-warm)",
+            fontSize: "1.5rem",
+            lineHeight: 0,
+            verticalAlign: "-0.2em",
+            marginRight: "0.15em",
+          }}
+        >
+          {"“"}
+        </span>
+        When you see a poor believer, believe that you behold an altar.
+        <span
+          style={{
+            color: "var(--gold-warm)",
+            fontSize: "1.5rem",
+            lineHeight: 0,
+            verticalAlign: "-0.2em",
+            marginLeft: "0.15em",
+          }}
+        >
+          {"”"}
+        </span>
       </blockquote>
       <p
         style={{
@@ -40,7 +61,7 @@ export default function H4() {
           color: "var(--gold-warm)",
         }}
       >
-        — Rumi
+        St. John Chrysostom
       </p>
       <GoldRule width="6rem" />
     </section>

@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { MottoLine } from "@/components/primitives/MottoLine";
-import { NewsletterForm } from "@/components/composites/NewsletterForm";
 
 export function Footer() {
   return (
@@ -19,7 +19,6 @@ export function Footer() {
     >
       <GoldRule width="6rem" />
       <MottoLine />
-      <NewsletterForm compact source="footer" />
       <p
         style={{
           margin: 0,
@@ -29,17 +28,17 @@ export function Footer() {
           color: "var(--gold-warm)",
         }}
       >
-        Write directly —{" "}
-        <a
-          href="mailto:[email]"
+        Prefer to{" "}
+        <Link
+          href="/#contact"
           style={{
             color: "var(--gold-warm)",
             textDecoration: "underline",
             textUnderlineOffset: "0.2em",
           }}
         >
-          [email]
-        </a>
+          write directly
+        </Link>
       </p>
       <p
         style={{

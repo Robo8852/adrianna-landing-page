@@ -45,28 +45,6 @@ export default function H8() {
         Adrianna.
       </p>
       <NewsletterForm source="h8" />
-      <p
-        style={{
-          margin: 0,
-          fontFamily: "var(--font-eb-garamond), Georgia, serif",
-          fontStyle: "italic",
-          fontSize: "1rem",
-          color: "var(--parchment)",
-          opacity: 0.85,
-        }}
-      >
-        Prefer to write directly?{" "}
-        <a
-          href="mailto:[email]"
-          style={{
-            color: "var(--gold-warm)",
-            textDecoration: "underline",
-            textUnderlineOffset: "0.2em",
-          }}
-        >
-          [email]
-        </a>
-      </p>
     </section>
   );
 }

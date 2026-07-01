@@ -13,11 +13,9 @@ import { useTurnstile } from "@/lib/hooks/useTurnstile";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-export interface NewsletterFormProps {
-  buttonLabel?: string;
-  compact?: boolean;
-  className?: string;
+export interface ContactFormProps {
   source?: string;
+  className?: string;
 }
 
 const visuallyHidden: CSSProperties = {
@@ -32,22 +30,40 @@ const visuallyHidden: CSSProperties = {
   border: 0,
 };
 
-export function NewsletterForm({
-  buttonLabel = "Subscribe to Our Newsletter",
-  compact = false,
-  className,
+const fieldStyle = (hasError: boolean, pending: boolean): CSSProperties => ({
+  backgroundColor: "transparent",
+  border: hasError
+    ? "1px solid rgba(217,190,126,0.85)"
+    : "1px solid rgba(201,169,97,0.35)",
+  color: "var(--parchment)",
+  fontFamily: "var(--font-eb-garamond), Georgia, serif",
+  fontStyle: "italic",
+  letterSpacing: "0.04em",
+  padding: "0.85rem 1rem",
+  borderRadius: 0,
+  outline: "none",
+  fontSize: "0.95rem",
+  width: "100%",
+  opacity: pending ? 0.6 : 1,
+  cursor: pending ? "default" : undefined,
+});
+
+export function ContactForm({
   source = "unknown",
-}: NewsletterFormProps = {}) {
-  const inputId = useId();
+  className,
+}: ContactFormProps = {}) {
+  const nameId = useId();
+  const emailId = useId();
+  const messageId = useId();
   const errorId = useId();
-  const hpId = useId();
-  const hpRef = useRef<HTMLInputElement>(null);
 
   // Turnstile (P3-10): nothing loads until the user touches the form.
   const turnstileRef = useRef<HTMLDivElement>(null);
   const { arm, getToken } = useTurnstile(turnstileRef);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [hp, setHp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -60,17 +76,12 @@ export function NewsletterForm({
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    const hp = hpRef.current?.value ?? "";
-    // Honeypot tripped: a hidden field humans never see has been filled.
-    // Show the normal confirmation so the bot gets no signal, but send nothing.
-    if (hp.trim() !== "") {
-      setSubmitted(true);
-      return;
-    }
-
     if (!EMAIL_RE.test(email.trim())) {
       setError("a valid email, please");
+      return;
+    }
+    if (!message.trim()) {
+      setError("a few words, please");
       return;
     }
     const elapsedMs =
@@ -79,20 +90,22 @@ export function NewsletterForm({
     setPending(true);
     try {
       const turnstileToken = await getToken();
-      // P3-9: submissions go through the /api/subscribe front door (IP rate
+      // P3-9: submissions go through the /api/contact front door (IP rate
       // limiting + Turnstile verification), not directly to Convex.
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email.trim(),
+          message: message.trim(),
+          name: name.trim() || undefined,
           source,
           hp,
           elapsedMs,
           turnstileToken,
         }),
       });
-      if (!res.ok) throw new Error("subscribe failed");
+      if (!res.ok) throw new Error("contact failed");
       setSubmitted(true);
     } catch {
       setError("the ink did not take — try again");
@@ -100,8 +113,6 @@ export function NewsletterForm({
       setPending(false);
     }
   }
-
-  const maxW = compact ? "22rem" : "28rem";
 
   if (submitted) {
     return (
@@ -112,7 +123,7 @@ export function NewsletterForm({
           flexDirection: "column",
           alignItems: "center",
           gap: "1rem",
-          maxWidth: maxW,
+          maxWidth: "28rem",
           margin: "0 auto",
         }}
       >
@@ -127,8 +138,7 @@ export function NewsletterForm({
             textAlign: "center",
           }}
         >
-          Inscribed in pending ink. A letter of confirmation is on its way —
-          open it and press the seal to make it permanent.
+          Inscribed. A response will arrive in due time.
         </p>
         <GoldRule width="6rem" animate={false} />
       </div>
@@ -142,46 +152,13 @@ export function NewsletterForm({
       className={className}
       style={{
         display: "flex",
-        flexDirection: compact ? "row" : "column",
-        gap: compact ? "0.5rem" : "0.75rem",
-        maxWidth: maxW,
+        flexDirection: "column",
+        gap: "0.75rem",
+        maxWidth: "28rem",
         margin: "0 auto",
         width: "100%",
       }}
     >
-      {/*
-        Honeypot. Hidden from sighted users (off-screen), from assistive tech
-        (aria-hidden), and from keyboard tab order (tabIndex -1). Real people
-        leave it empty; bots that fill every field expose themselves. The value
-        is also re-checked in the subscribe mutation, since a bot can skip the
-        form and hit the backend directly.
-      */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          left: "-9999px",
-          top: 0,
-          width: "1px",
-          height: "1px",
-          overflow: "hidden",
-        }}
-      >
-        <label htmlFor={hpId}>Company</label>
-        <input
-          id={hpId}
-          ref={hpRef}
-          type="text"
-          name="company"
-          tabIndex={-1}
-          autoComplete="off"
-          defaultValue=""
-          aria-hidden="true"
-        />
-      </div>
-      <label htmlFor={inputId} style={visuallyHidden}>
-        Email address
-      </label>
       <div aria-hidden="true" style={visuallyHidden}>
         <input
           name="company"
@@ -193,8 +170,27 @@ export function NewsletterForm({
           aria-hidden="true"
         />
       </div>
+
+      <label htmlFor={nameId} style={visuallyHidden}>
+        Name (optional)
+      </label>
       <input
-        id={inputId}
+        id={nameId}
+        type="text"
+        maxLength={100}
+        placeholder="your name (optional)"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onFocus={arm}
+        disabled={pending}
+        style={fieldStyle(false, pending)}
+      />
+
+      <label htmlFor={emailId} style={visuallyHidden}>
+        Email address
+      </label>
+      <input
+        id={emailId}
         type="email"
         required
         maxLength={254}
@@ -205,22 +201,30 @@ export function NewsletterForm({
         disabled={pending}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
+        style={fieldStyle(!!error, pending)}
+      />
+
+      <label htmlFor={messageId} style={visuallyHidden}>
+        Message
+      </label>
+      <textarea
+        id={messageId}
+        required
+        rows={5}
+        maxLength={5000}
+        placeholder="your message"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        disabled={pending}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? errorId : undefined}
         style={{
-          flex: 1,
-          backgroundColor: "transparent",
-          border: error
-            ? "1px solid rgba(217,190,126,0.85)"
-            : "1px solid rgba(201,169,97,0.35)",
-          color: "var(--parchment)",
-          fontFamily: "var(--font-eb-garamond), Georgia, serif",
+          ...fieldStyle(!!error, pending),
+          resize: "vertical",
           fontStyle: "italic",
-          letterSpacing: "0.04em",
-          padding: compact ? "0.6rem 0.8rem" : "0.85rem 1rem",
-          borderRadius: 0,
-          outline: "none",
-          fontSize: compact ? "0.9rem" : "0.95rem",
         }}
       />
+
       <button
         type="submit"
         disabled={pending}
@@ -232,8 +236,8 @@ export function NewsletterForm({
           fontFamily: "var(--font-cormorant), Georgia, serif",
           letterSpacing: "0.32em",
           textTransform: "uppercase",
-          fontSize: compact ? "0.7rem" : "0.78rem",
-          padding: compact ? "0.6rem 1.2rem" : "0.85rem 1.6rem",
+          fontSize: "0.78rem",
+          padding: "0.85rem 1.6rem",
           height: "auto",
           boxShadow: "inset 0 0 0 1px rgba(201,169,97,0.18)",
           transition: "background-color 350ms ease, color 350ms ease",
@@ -249,13 +253,15 @@ export function NewsletterForm({
           e.currentTarget.style.color = "var(--gold-warm)";
         }}
       >
-        {buttonLabel}
+        Send
       </button>
+
       {/*
         Turnstile mount point. Invisible in interaction-only mode; if
         Cloudflare escalates to a visible challenge it renders here.
       */}
-      <div ref={turnstileRef} style={{ flexBasis: "100%" }} />
+      <div ref={turnstileRef} />
+
       {error ? (
         <p
           id={errorId}
