@@ -181,7 +181,10 @@ export const sendContactNotification = internalAction({
     const from =
       process.env.NEWSLETTER_FROM ??
       "The Altar Within <letters@the-altar-within.com>";
-    const notifyEmail = process.env.CONTACT_NOTIFY_EMAIL ?? "leoreyes@costadelsolweb.com";
+    const notifyEmails = (process.env.CONTACT_NOTIFY_EMAIL ?? "leoreyes@costadelsolweb.com")
+      .split(",")
+      .map((addr) => addr.trim())
+      .filter(Boolean);
 
     // Local dev without keys: skip quietly so submissions still work.
     if (!apiKey) {
@@ -217,7 +220,7 @@ export const sendContactNotification = internalAction({
       headers,
       body: JSON.stringify({
         from,
-        to: notifyEmail,
+        to: notifyEmails,
         reply_to: email,
         subject: `New inquiry from ${safeName || email} — The Altar Within`,
         text: body,
