@@ -170,7 +170,7 @@ export default function Hero() {
           }}
         >
           <span style={{ color: "var(--gold)" }}>—&nbsp;&nbsp;</span>
-          LUX&nbsp;·&nbsp;VERITAS&nbsp;·&nbsp;FORMATION
+          LUX&nbsp;·&nbsp;VERITAS&nbsp;·&nbsp;FORMA
           <span style={{ color: "var(--gold)" }}>&nbsp;&nbsp;—</span>
         </p>
 
@@ -185,7 +185,7 @@ export default function Hero() {
             animationDelay: "1.7s",
           }}
         >
-          Light&nbsp;·&nbsp;Truth&nbsp;·&nbsp;Form
+          Light&nbsp;·&nbsp;Truth&nbsp;·&nbsp;Formation
         </p>
 
         {/* Hairline divider — extends from center */}
