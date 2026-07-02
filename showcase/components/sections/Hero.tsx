@@ -211,18 +211,6 @@ export default function Hero() {
           Traditional Psychology&nbsp;•&nbsp;Spiritual Direction&nbsp;•&nbsp;Conservative Counseling
         </p>
 
-        {/* Practitioner subline */}
-        <p
-          className="altar-reveal mt-3 text-base italic md:text-lg"
-          style={{
-            color: "var(--gold-warm)",
-            animationDelay: "2.45s",
-            letterSpacing: "0.04em",
-          }}
-        >
-          with Judith Adrianna Naílah
-        </p>
-
         {/* Brief positioning */}
         <p
           className="altar-reveal mt-8 max-w-lg text-sm leading-relaxed md:text-[0.95rem]"
