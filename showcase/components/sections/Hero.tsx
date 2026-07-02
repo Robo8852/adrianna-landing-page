@@ -170,7 +170,7 @@ export default function Hero() {
           }}
         >
           <span style={{ color: "var(--gold)" }}>—&nbsp;&nbsp;</span>
-          LUX&nbsp;·&nbsp;VERITAS&nbsp;·&nbsp;FORMA
+          LUX&nbsp;·&nbsp;VERITAS&nbsp;·&nbsp;FORMATION
           <span style={{ color: "var(--gold)" }}>&nbsp;&nbsp;—</span>
         </p>
 
