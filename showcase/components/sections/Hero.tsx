@@ -1,7 +1,7 @@
 "use client";
 
-import { NewsletterForm } from "@/components/composites/NewsletterForm";
-import { SigilDraw } from "@/components/primitives/SigilDraw";
+import { NewsletterForm } from "@/features/newsletter";
+import { SigilEntrance } from "@/components/primitives/SigilEntrance";
 
 export default function Hero() {
   return (
@@ -140,9 +140,9 @@ export default function Hero() {
         className="relative z-[5] mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-6 py-48 text-center"
         style={{ fontFamily: "var(--font-eb-garamond), Georgia, serif" }}
       >
-        {/* Sigil — centerline trace of the official brand mark; inks itself on */}
+        {/* Sigil — draws on as the centerline trace, settles as the clean mark */}
         <div>
-          <SigilDraw size={200} />
+          <SigilEntrance size={200} />
         </div>
 
         {/* Brand */}
@@ -208,7 +208,7 @@ export default function Hero() {
             letterSpacing: "0.02em",
           }}
         >
-          Traditional Psychology&nbsp;•&nbsp;Spiritual Direction&nbsp;•&nbsp;Conservative Counseling
+          Traditional Psychology&nbsp;•&nbsp;Spiritual Resilience&nbsp;•&nbsp;Conservative Counseling
         </p>
 
         {/* Brief positioning */}
@@ -219,8 +219,9 @@ export default function Hero() {
             animationDelay: "2.7s",
           }}
         >
-          CPTSD and Post-Traumatic Growth Educator — demystifying maladaptive learned
-          behaviors and complex mental health disharmonies.
+          Estrangement, Reconciliation &amp; Restoration — the complex dynamics of
+          family rupture, forgiveness, boundaries, and the difficult path back
+          to one another.
         </p>
 
         {/* CTA */}

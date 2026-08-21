@@ -64,14 +64,12 @@ This introductory call is a space for us to connect and see if we're the right f
 
 ### 1:1 Psychotherapy Session — Consultation
 **Duration:** 60–90 minutes
-**Price:** $120
+**Price:** $125 *(flat rate; changed from $120 on 2026-07-05 alongside removal of the 3-session package)*
 
 In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.
 
 ### 3-Session Package
-**Price:** $270 *(save $90)*
-
-This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.
+*(Removed from the live site 2026-07-05 in favor of one flat published session rate — see Open Items. Source copy read: **$270** (save $90) — "This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.")*
 
 ### Psychotherapy with Coaching
 **Duration:** 60–90 minutes
@@ -80,10 +78,10 @@ This package allows us to build momentum and consistency in your healing journey
 These sessions combine psychotherapy with a coaching framework for a holistic, action-oriented approach. Ideal for those entering the realm of Conscious Leadership Coaching — empowering creative executives, professionals, and entrepreneurs to harness both self-leadership and collective leadership capacities, with a focus on fostering clarity, optimizing flow, and creating expansive impact.
 
 ### Insurance
-If you have insurance, we'll apply your deductible and the final payment for sessions will be **$65**.
+*(Pulled from the live site 2026-07-05, pending confirmation with Adrianna — see Open Items. Source copy read: "If you have insurance, we'll apply your deductible and the final payment for sessions will be **$65**.")*
 
 ### Financial Flexibility
-*(Copy missing from source asset — to be supplied.)*
+*(Pulled from the live site 2026-07-05 — the sliding-scale line that shipped was placeholder copy never supplied by the source asset. See Open Items.)*
 
 ---
 
@@ -211,6 +209,7 @@ Continue the conversation — return to Home, book a free intro call, or join th
 
 - Personal quote attribution ("Tk. T 5,53") — what's the correct source?
 - Credential #5 DBT certifying body — original asset says "DBTNCAA," which appears fabricated.
-- "Financial Flexibility" body copy — missing from source.
+- Insurance + Financial Flexibility notes — removed from the live fees section (2026-07-05) pending Adrianna's confirmation. The $65-after-deductible line advertises a second fee schedule alongside the $90/session package rate, which is a payer-contract risk if she's insurance-paneled; the sliding-scale line was placeholder copy missing from the source asset. Confirm with her whether/how to restore either.
+- Pricing restructured 2026-07-05 (confirm with Adrianna): 3-Session Package ($270, a 25% discount — well beyond the ~10% typical for therapy packages) removed, and the session rate set to a flat $125 (was $120). Rationale: one clear published rate avoids the dual-fee-schedule and prepaid-refund issues; if she wants a package, the market-normal structure is packaging the coaching tier instead.
 - Stylistic "Ð" (eth) characters in original — assumed to be typos, normalized to "D".
 - 1-line pillar distillations on Home page (H6) — are these phrasings okay, or do you want her own words?

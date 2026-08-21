@@ -32,8 +32,8 @@ export default function A1() {
       <Image
         src="/bio-pic.jpg"
         alt="Judith Adrianna Naílah"
-        width={958}
-        height={991}
+        width={1078}
+        height={1080}
         priority
         sizes="(max-width: 480px) 72vw, 320px"
         style={{

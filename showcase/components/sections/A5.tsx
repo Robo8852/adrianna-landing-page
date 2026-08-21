@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { GoldRule } from "@/components/primitives/GoldRule";
 import { ArrowGlyph } from "@/components/primitives/ArrowGlyph";
-import { BookButton } from "@/components/composites/BookButton";
+import { BookButton } from "@/features/calendly";
 
 const linkStyle = {
   fontFamily: "var(--font-cormorant), Georgia, serif",

@@ -1,8 +1,8 @@
 "use client";
 
 import { GoldRule } from "@/components/primitives/GoldRule";
-import { BookButton } from "@/components/composites/BookButton";
-import type { BookingKey } from "@/lib/calendly";
+import { BookButton } from "@/features/calendly";
+import type { BookingKey } from "@/features/calendly";
 
 export interface PriceCardProps {
   name: string;

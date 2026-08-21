@@ -6,7 +6,7 @@ import H7 from "@/components/sections/H7";
 import H8 from "@/components/sections/H8";
 import { Suspense } from "react";
 import ContactSection from "@/components/sections/ContactSection";
-import { NewsletterModal } from "@/components/composites/NewsletterModal";
+import { NewsletterModal } from "@/features/newsletter";
 import { ConfirmedBanner } from "@/components/composites/ConfirmedBanner";
 
 export default function Home() {

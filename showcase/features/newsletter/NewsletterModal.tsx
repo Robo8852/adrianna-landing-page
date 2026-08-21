@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { GoldRule } from "@/components/primitives/GoldRule";
-import { NewsletterForm } from "@/components/composites/NewsletterForm";
+import { NewsletterForm } from "./NewsletterForm";
 
 export interface NewsletterModalProps {
   /** Scroll depth (0–1) that triggers the modal. Default 0.5 = halfway down. */

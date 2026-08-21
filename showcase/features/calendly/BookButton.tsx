@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import type { BookingKey } from "@/lib/calendly";
-import { bookingUrl } from "@/lib/calendly";
-import { useCalendly } from "@/lib/hooks/useCalendly";
+import type { BookingKey } from "./calendly";
+import { bookingUrl } from "./calendly";
+import { useCalendly } from "./useCalendly";
 
 export interface BookButtonProps {
   bookingKey: BookingKey;
