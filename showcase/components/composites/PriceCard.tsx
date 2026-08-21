@@ -57,8 +57,8 @@ export function PriceCard({
           style={{
             margin: 0,
             fontFamily: "var(--font-cormorant), Georgia, serif",
-            fontSize: "0.78rem",
-            letterSpacing: "0.28em",
+            fontSize: "0.95rem",
+            letterSpacing: "0.24em",
             textTransform: "uppercase",
             color: "var(--gold-warm)",
           }}
@@ -104,8 +104,9 @@ export function PriceCard({
         {description}
       </p>
       {bookingKey ? (
-        <div style={{ marginTop: "auto", paddingTop: "0.5rem" }}>
+        <div style={{ marginTop: "auto", paddingTop: "0.5rem", width: "100%" }}>
           <BookButton
+            className="w-full"
             bookingKey={bookingKey}
             label={
               bookingKey === "intro"

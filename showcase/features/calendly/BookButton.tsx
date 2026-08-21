@@ -37,7 +37,7 @@ export function BookButton({
           : "var(--gold, #C9A961)",
         color: "var(--ink-green, #0B3B36)",
         fontFamily: "var(--font-cormorant), Georgia, serif",
-        fontSize: "0.85rem",
+        fontSize: "0.95rem",
         fontWeight: 500,
         letterSpacing: "0.18em",
         textTransform: "uppercase",
