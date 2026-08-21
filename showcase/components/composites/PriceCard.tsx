@@ -106,7 +106,13 @@ export function PriceCard({
         <div style={{ marginTop: "0.5rem" }}>
           <BookButton
             bookingKey={bookingKey}
-            label={bookingKey === "intro" ? "Book — Free" : "Book a Session"}
+            label={
+              bookingKey === "intro"
+                ? "Book — Free"
+                : bookingKey === "package"
+                  ? "Book the Package"
+                  : "Book a Session"
+            }
           />
         </div>
       ) : null}
