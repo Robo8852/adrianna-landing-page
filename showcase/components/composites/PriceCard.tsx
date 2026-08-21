@@ -27,6 +27,7 @@ export function PriceCard({
     <article
       className={className}
       style={{
+        height: "100%",
         padding: "2.5rem 1.75rem",
         border: "1px solid rgba(201,169,97,0.35)",
         boxShadow: "inset 0 0 0 1px rgba(201,169,97,0.08)",
@@ -103,7 +104,7 @@ export function PriceCard({
         {description}
       </p>
       {bookingKey ? (
-        <div style={{ marginTop: "0.5rem" }}>
+        <div style={{ marginTop: "auto", paddingTop: "0.5rem" }}>
           <BookButton
             bookingKey={bookingKey}
             label={
