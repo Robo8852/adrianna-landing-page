@@ -26,7 +26,7 @@ export default function A2() {
           shaping her purpose through the adversities she endured since
           childhood and adolescence. At her core, she is a Transpersonal and
           Integration Psychotherapist, deeply committed to demystifying the
-          complexities of trauma and internal systems.
+          complexities of trauma, family rupture, and internal systems.
         </DropCap>
         <p
           style={{

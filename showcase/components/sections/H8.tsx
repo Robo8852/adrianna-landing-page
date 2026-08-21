@@ -1,7 +1,7 @@
 "use client";
 
 import { GoldRule } from "@/components/primitives/GoldRule";
-import { NewsletterForm } from "@/components/composites/NewsletterForm";
+import { NewsletterForm } from "@/features/newsletter";
 
 export default function H8() {
   return (

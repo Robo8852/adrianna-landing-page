@@ -17,14 +17,14 @@
  * (chiral pinwheel, ~4-fold).
  */
 
-interface SigilStroke { d: string; len: number; delay: number; dur: number; }
+export interface SigilStroke { d: string; len: number; delay: number; dur: number; }
 
 // Solid 4-point star, tips on the axes, sides curving CONCAVE toward center
 // (tip radius ~80, waist ~42) to match the source mark's bold little star.
-const STAR =
+export const STAR =
   "M 500 420 Q 521.2 478.8 580 500 Q 521.2 521.2 500 580 Q 478.8 521.2 420 500 Q 478.8 478.8 500 420 Z";
 
-const SIGIL_STROKES: SigilStroke[] = [
+export const SIGIL_STROKES: SigilStroke[] = [
   // NOTE: three center->tip stub strokes were removed here — they were
   // skeleton bridges gluing the filled star to the arms and ran over the
   // top/left/bottom star tips, blunting them. The star floats alone (as in

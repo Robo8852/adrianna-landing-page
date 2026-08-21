@@ -98,3 +98,32 @@ body {
     display: none !important;
   }
 }
+
+/* Calendly popup — responsive override.
+   The vendor stylesheet hard-codes the popup at 1000x700 and centers it with
+   `left/top:50%` + `transform:translate(-500px,-350px)`. Those are absolute
+   pixels, so on any viewport narrower than ~1040px (or shorter than ~740px)
+   the popup overflows the right edge and the bottom. We clamp it to the
+   viewport and re-center with percentage-based translation instead. */
+.calendly-overlay .calendly-popup {
+  width: min(1000px, 100vw - 2rem) !important;
+  height: min(700px, 100vh - 5rem) !important;
+  max-width: 100vw;
+  max-height: 100vh;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.calendly-overlay .calendly-popup-content,
+.calendly-overlay .calendly-popup iframe {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Sigil entrance: final safety sweep of the reveal mask (see SigilEntrance). */
+@keyframes altar-sigil-sweep {
+  to {
+    opacity: 1;
+  }
+}

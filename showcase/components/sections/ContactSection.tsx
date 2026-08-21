@@ -1,7 +1,7 @@
 "use client";
 
 import { SectionHeading } from "@/components/primitives/SectionHeading";
-import { ContactForm } from "@/components/composites/ContactForm";
+import { ContactForm } from "@/features/contact";
 
 export default function ContactSection() {
   return (

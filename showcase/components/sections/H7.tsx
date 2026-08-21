@@ -2,7 +2,7 @@
 
 import { SectionHeading } from "@/components/primitives/SectionHeading";
 import { PriceCard } from "@/components/composites/PriceCard";
-import type { BookingKey } from "@/lib/calendly";
+import type { BookingKey } from "@/features/calendly";
 
 interface Service {
   name: string;
@@ -25,18 +25,10 @@ const services: Service[] = [
   {
     name: "1:1 Psychotherapy Session",
     duration: "60–90 minutes",
-    price: "$125",
+    price: "$180",
     bookingKey: "session",
     description:
       "In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.",
-  },
-  {
-    name: "Psychotherapy with Coaching",
-    duration: "60–90 minutes",
-    price: "$200",
-    bookingKey: "coaching",
-    description:
-      "These sessions combine psychotherapy with a coaching framework for a holistic, action-oriented approach. Ideal for those entering the realm of Conscious Leadership Coaching — empowering creative executives, professionals, and entrepreneurs to harness both self-leadership and collective leadership capacities, with a focus on fostering clarity, optimizing flow, and creating expansive impact.",
   },
 ];
 

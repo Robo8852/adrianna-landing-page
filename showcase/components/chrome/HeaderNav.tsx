@@ -6,6 +6,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import { Sigil } from "@/components/primitives/Sigil";
 import { useScrolled } from "@/lib/hooks/useScrolled";
+import { bookingUrl, useCalendly } from "@/features/calendly";
 
 const linkStyle = (active: boolean): CSSProperties => ({
   fontFamily: "var(--font-cormorant), Georgia, serif",
@@ -42,6 +43,7 @@ export function HeaderNav() {
   const scrolled = useScrolled(80);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { open: openBooking } = useCalendly();
 
   useEffect(() => {
     setMounted(true);
@@ -125,10 +127,20 @@ export function HeaderNav() {
         <Link
           href="/#newsletter"
           onClick={() => setMenuOpen(false)}
-          style={mobileBrassPlaqueStyle}
+          style={{ ...linkStyle(false), fontSize: "0.95rem" }}
         >
           Newsletter
         </Link>
+        <button
+          type="button"
+          onClick={() => {
+            setMenuOpen(false);
+            openBooking(bookingUrl("session"));
+          }}
+          style={{ ...mobileBrassPlaqueStyle, cursor: "pointer" }}
+        >
+          Book a Session
+        </button>
       </div>
     </div>
   ) : null;
@@ -220,7 +232,20 @@ export function HeaderNav() {
           </Link>
           <Link
             href="/#newsletter"
-            style={brassPlaqueStyle}
+            style={linkStyle(false)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--gold-warm)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--parchment)";
+            }}
+          >
+            Newsletter
+          </Link>
+          <button
+            type="button"
+            onClick={() => openBooking(bookingUrl("session"))}
+            style={{ ...brassPlaqueStyle, cursor: "pointer" }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "rgba(201,169,97,0.08)";
               e.currentTarget.style.color = "var(--parchment)";
@@ -230,8 +255,8 @@ export function HeaderNav() {
               e.currentTarget.style.color = "var(--gold-warm)";
             }}
           >
-            Newsletter
-          </Link>
+            Book a Session
+          </button>
         </div>
 
         {/* Mobile hamburger */}
