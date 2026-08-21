@@ -25,10 +25,18 @@ const services: Service[] = [
   {
     name: "1:1 Psychotherapy Session",
     duration: "60–90 minutes",
-    price: "$180",
+    price: "$175",
     bookingKey: "session",
     description:
       "In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.",
+  },
+  {
+    name: "3-Session Package",
+    duration: "3 × 60–90 minutes",
+    price: "$499",
+    bookingKey: "package",
+    description:
+      "This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.",
   },
 ];
 
@@ -46,8 +54,8 @@ export default function H7() {
     >
       <SectionHeading size="2.25rem">Services &amp; Offerings</SectionHeading>
       <div
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        style={{ maxWidth: "52rem", width: "100%" }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        style={{ maxWidth: "72rem", width: "100%" }}
       >
         {services.map((s) => (
           <PriceCard

@@ -64,12 +64,15 @@ This introductory call is a space for us to connect and see if we're the right f
 
 ### 1:1 Psychotherapy Session — Consultation
 **Duration:** 60–90 minutes
-**Price:** $125 *(flat rate; changed from $120 on 2026-07-05 alongside removal of the 3-session package)*
+**Price:** $175 *(set 2026-08-18 with Adrianna; history: $120 → $125 on 2026-07-05 → $180 → $175)*
 
 In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.
 
 ### 3-Session Package
-*(Removed from the live site 2026-07-05 in favor of one flat published session rate — see Open Items. Source copy read: **$270** (save $90) — "This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.")*
+**Duration:** 3 × 60–90 minutes
+**Price:** $499 *(restored 2026-08-18 with Adrianna; ~5% off 3 × $175. Removed 2026-07-05 at the old $270, see Open Items.)*
+
+*(Original source copy: **$270** (save $90) — "This package allows us to build momentum and consistency in your healing journey. The same depth as individual sessions at a discounted rate, supporting your commitment to ongoing growth, exploration, integration, and transformation.")*
 
 ### Psychotherapy with Coaching
 **Duration:** 60–90 minutes
