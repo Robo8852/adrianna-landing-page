@@ -135,7 +135,7 @@ export function HeaderNav() {
           type="button"
           onClick={() => {
             setMenuOpen(false);
-            openBooking(bookingUrl("session"));
+            openBooking(bookingUrl("menu"));
           }}
           style={{ ...mobileBrassPlaqueStyle, cursor: "pointer" }}
         >
@@ -244,7 +244,7 @@ export function HeaderNav() {
           </Link>
           <button
             type="button"
-            onClick={() => openBooking(bookingUrl("session"))}
+            onClick={() => openBooking(bookingUrl("menu"))}
             style={{ ...brassPlaqueStyle, cursor: "pointer" }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "rgba(201,169,97,0.08)";

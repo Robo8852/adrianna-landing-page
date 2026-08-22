@@ -5,6 +5,7 @@ import { BookButton } from "@/features/calendly";
 import type { BookingKey } from "@/features/calendly";
 
 const BOOK_LABELS: Record<BookingKey, string> = {
+  menu: "Book a Session",
   intro: "Book — Free",
   session: "Book a Session",
   immersion: "Book the Immersion",

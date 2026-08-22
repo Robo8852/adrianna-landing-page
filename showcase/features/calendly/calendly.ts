@@ -8,20 +8,30 @@ const ACCOUNT =
   process.env.NEXT_PUBLIC_CALENDLY_URL ?? "https://calendly.com/thealtarwithin";
 
 export type BookingKey =
+  | "menu"
   | "intro"
   | "session"
   | "immersion"
   | "fourpack"
   | "coaching";
 
-// Confirmed from her Linktree scrape: only `intro` is a verified live event.
-// The rest are null (unconfirmed) and fall back to her account landing page
-// until she confirms the real slugs.
+// UX rule: a button with a specific intent opens that specific event; a
+// button with undecided intent (the nav CTA) opens the account landing page,
+// which lists every event — the "menu".
+//
+// A null slug resolves to the landing page. For `menu` that is deliberate.
+// For the others it is a fallback until the real event exists on Calendly.
+//
+// Live events verified 2026-08-22 on calendly.com/thealtarwithin:
+//   short-form-consultation-30-min  — 30 min
+//   session-1                       — "60-75 Min | Full Immersion Session"
+//   content-creation-podcast-collaboration-inquiry — 45 min (not a service)
 const SERVICE_SLUGS: Record<BookingKey, string | null> = {
-  intro: "short-form-consultation-30-min", // ✅ confirmed live
-  session: null, // TODO: confirm real slug
-  immersion: null, // TODO: confirm real slug
-  fourpack: null, // TODO: confirm real slug
+  menu: null, // intentional: show all events
+  intro: "short-form-consultation-30-min", // ✅ live
+  session: "session-1", // ✅ live (60–75 min)
+  immersion: null, // TODO: Adrianna to create a 90–120 min event
+  fourpack: null, // TODO: Adrianna to create a four-session event
   coaching: null, // TODO: confirm real slug
 };
 
