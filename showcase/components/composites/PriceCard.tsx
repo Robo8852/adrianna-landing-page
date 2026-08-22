@@ -4,6 +4,14 @@ import { GoldRule } from "@/components/primitives/GoldRule";
 import { BookButton } from "@/features/calendly";
 import type { BookingKey } from "@/features/calendly";
 
+const BOOK_LABELS: Record<BookingKey, string> = {
+  intro: "Book — Free",
+  session: "Book a Session",
+  immersion: "Book the Immersion",
+  fourpack: "Reserve the Four",
+  coaching: "Book a Session",
+};
+
 export interface PriceCardProps {
   name: string;
   duration?: string;
@@ -108,13 +116,7 @@ export function PriceCard({
           <BookButton
             className="w-full"
             bookingKey={bookingKey}
-            label={
-              bookingKey === "intro"
-                ? "Book — Free"
-                : bookingKey === "package"
-                  ? "Book the Package"
-                  : "Book a Session"
-            }
+            label={BOOK_LABELS[bookingKey]}
           />
         </div>
       ) : null}

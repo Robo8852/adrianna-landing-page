@@ -7,7 +7,12 @@
 const ACCOUNT =
   process.env.NEXT_PUBLIC_CALENDLY_URL ?? "https://calendly.com/thealtarwithin";
 
-export type BookingKey = "intro" | "session" | "package" | "coaching";
+export type BookingKey =
+  | "intro"
+  | "session"
+  | "immersion"
+  | "fourpack"
+  | "coaching";
 
 // Confirmed from her Linktree scrape: only `intro` is a verified live event.
 // The rest are null (unconfirmed) and fall back to her account landing page
@@ -15,7 +20,8 @@ export type BookingKey = "intro" | "session" | "package" | "coaching";
 const SERVICE_SLUGS: Record<BookingKey, string | null> = {
   intro: "short-form-consultation-30-min", // ✅ confirmed live
   session: null, // TODO: confirm real slug
-  package: null, // TODO: confirm real slug
+  immersion: null, // TODO: confirm real slug
+  fourpack: null, // TODO: confirm real slug
   coaching: null, // TODO: confirm real slug
 };
 
