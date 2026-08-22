@@ -1,5 +1,19 @@
 # Handoff: finish the Calendly wiring via her logged-in dashboard
 
+> **DONE 2026-08-22.** All six tasks completed and verified live. Commits `22fb67d`
+> (slug wiring) and `679f49a` (spec addendum). Results:
+>
+> | Event | Slug | Status |
+> |---|---|---|
+> | 1:1 Psychotherapy Session (renamed from "60-75 Min \| Full Immersion Session.") | `session-1` | live |
+> | Deep Immersion — 90 min, Zoom | `deep-immersion` | live |
+> | Four 1:1 Sessions — 60 min, Zoom | `four-1-1-sessions` | live |
+>
+> No payments configured. Podcast event and availability untouched. All 6 site CTAs
+> verified opening the matching event. Browser gotcha (MCP spawning its own Chrome) is
+> fixed in `~/.claude.json` and documented in `~/.claude/CLAUDE.md`.
+> Everything below is the original brief, kept for reference.
+
 Written 2026-08-22 for a fresh session. Everything below is verified; nothing is assumed.
 
 ## Where things stand
@@ -13,8 +27,8 @@ Services section was restructured today:
 | Hero "Free Intro Call"          |       | `intro`     | `short-form-consultation-30-min`   | done   |
 | Introductory Meeting, 30 min    | Free  | `intro`     | `short-form-consultation-30-min`   | done   |
 | 1:1 Psychotherapy, 60–75 min    | $175  | `session`   | `session-1`                        | done   |
-| Deep Immersion, 90–120 min      | $275  | `immersion` | null → falls to landing page       | **TODO** |
-| Four 1:1 Sessions (band)        | $600  | `fourpack`  | null → falls to landing page       | **TODO** |
+| Deep Immersion, 90–120 min      | $275  | `immersion` | `deep-immersion`                   | done   |
+| Four 1:1 Sessions (band)        | $600  | `fourpack`  | `four-1-1-sessions`                | done   |
 
 UX rule (encoded in `showcase/features/calendly/calendly.ts`): specific intent → specific
 event; undecided intent (nav) → the landing page "menu". The two TODOs are null only because
