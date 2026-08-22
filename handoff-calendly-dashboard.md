@@ -38,21 +38,28 @@ Calendly's REST API **cannot create or edit event types** — dashboard only. He
 
 ## Browser access
 
-A dedicated Chrome profile at `~/chrome-debug/` is logged into Adrianna's Calendly. Launch it
-with remote debugging (it was NOT running when this was written — port 9222 empty):
+**As of this handoff, Chrome is ALREADY RUNNING on port 9222, logged into Adrianna's
+Calendly, with the event-types page open.** Attach with the `mcp__chrome-devtools__*`
+tools (`list_pages` first). Skip the launch unless `curl -s http://127.0.0.1:9222/json/version`
+returns nothing.
+
+If it needs relaunching:
 
 ```bash
-export DISPLAY=:0 XAUTHORITY=$(ls /run/user/1000/.mutter-Xwaylandauth.* 2>/dev/null | head -1)
-google-chrome --user-data-dir="$HOME/chrome-debug" --remote-debugging-port=9222 \
-  "https://calendly.com/event_types/user/me" &
-sleep 3 && curl -s http://127.0.0.1:9222/json/version   # should return JSON
+DISPLAY=:0 google-chrome --user-data-dir="$HOME/chrome-debug" --profile-directory="Profile 20" \
+  --remote-debugging-port=9222 "https://calendly.com/event_types/user/me" &
 ```
 
-Then drive it with the `mcp__chrome-devtools__*` tools (`list_pages`, `take_snapshot`, `click`,
-`fill`, `take_screenshot`). If the profile turns out to be logged out, STOP and tell Leo —
-do not attempt to log in.
+Why that exact form (learned the hard way, 2026-08-22):
+- Her profile is `Profile 20` (connect@the-altar-within.com). It was copied from the main
+  Chrome config into `~/chrome-debug/Profile 20` so the login travels with it.
+- `--remote-debugging-port` is **ignored on the default user-data-dir** since Chrome 136.
+  The separate `--user-data-dir` is mandatory, not optional.
+- If any Chrome is already running, the flags are ignored and a window opens in the
+  existing instance. `pgrep -x chrome` must be empty before launching. Main Chrome keeps
+  running in the background after windows close — `kill` the pid if needed.
 
-See `~/notes/chrome-profile-launch.md` for profile background.
+If the profile turns out to be logged out, STOP and tell Leo — do not attempt to log in.
 
 ## Tasks, in order
 
