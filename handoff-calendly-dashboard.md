@@ -61,6 +61,11 @@ Why that exact form (learned the hard way, 2026-08-22):
 
 If the profile turns out to be logged out, STOP and tell Leo — do not attempt to log in.
 
+Dashboard as seen 2026-08-22 (logged in as "Adrianna Nailah-TheAltarWithin"): all three
+existing events are **Zoom · One-on-One**. Calendly stores one duration per event — "Full
+Immersion" lists as "1 hr"; the 60–75 range exists only in its name. Use the "+ Create"
+button top-right → Event type → One-on-one.
+
 ## Tasks, in order
 
 ### 1. Rename the $175 event
@@ -78,6 +83,7 @@ New event type → One-on-one.
 - Duration: custom, **90 min** (Calendly takes one number; 90 is the floor of the 90–120 range
   the site advertises — leave a note in the description that sessions run 90–120)
 - Description: "An extended 90–120 minute session for the work that needs room to unfold."
+- Location: **Zoom** (match the existing events — see screenshot note below)
 - Everything else: defaults. No payment.
 - Record the slug from the event's "Copy link".
 
@@ -87,6 +93,7 @@ New event type → One-on-one.
 - Duration: **60 min**
 - Description: "Book your first of four sessions here — we'll schedule the remaining three
   together at the end of it."
+- Location: **Zoom**
 - No payment. No extra questions.
 - Record the slug.
 
