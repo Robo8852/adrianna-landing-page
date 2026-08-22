@@ -66,3 +66,15 @@ API token wiring. Only `intro` resolves to a real event; `session` / `package` /
   + translate(-500px,-350px); override clamps to min(1000px,100vw-2rem) etc.
   and re-centers with translate(-50%,-50%).
 - STILL NULL: session/package/coaching slugs in features/calendly/calendly.ts.
+
+## Session addendum 2026-08-22 (Calendly dashboard wiring — done)
+
+- Event names now match the cards. Done via her dashboard (API can't edit event types):
+  - `session-1` renamed "60-75 Min | Full Immersion Session." → **"1:1 Psychotherapy Session"** (slug kept).
+  - Created **"Deep Immersion"** → `deep-immersion`, 90 min, Zoom, description notes 90–120.
+  - Created **"Four 1:1 Sessions"** → `four-1-1-sessions`, 60 min, Zoom, "book your first of four".
+- No payment collection on any event (Leo's call; $600 collected outside Calendly).
+- `calendly.ts`: only `menu` (intentional) and `coaching` (no card uses it) remain null.
+- Verified live: all 6 CTAs open the matching event (commit 22fb67d).
+- Browser note: chrome-devtools MCP now launches with `--browserUrl=http://127.0.0.1:9222`
+  (~/.claude.json); without it the MCP spawns its own blank Chrome instead of attaching.
