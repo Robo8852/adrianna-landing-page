@@ -24,14 +24,16 @@ export type BookingKey =
 //
 // Live events verified 2026-08-22 on calendly.com/thealtarwithin:
 //   short-form-consultation-30-min  — 30 min
-//   session-1                       — "60-75 Min | Full Immersion Session"
+//   session-1                       — "1:1 Psychotherapy Session" (60–75 min)
+//   deep-immersion                  — "Deep Immersion", 90 min
+//   four-1-1-sessions               — "Four 1:1 Sessions", 60 min
 //   content-creation-podcast-collaboration-inquiry — 45 min (not a service)
 const SERVICE_SLUGS: Record<BookingKey, string | null> = {
   menu: null, // intentional: show all events
   intro: "short-form-consultation-30-min", // ✅ live
   session: "session-1", // ✅ live (60–75 min)
-  immersion: null, // TODO: Adrianna to create a 90–120 min event
-  fourpack: null, // TODO: Adrianna to create a four-session event
+  immersion: "deep-immersion", // ✅ live (90 min; description notes 90–120)
+  fourpack: "four-1-1-sessions", // ✅ live (60 min, first of four)
   coaching: null, // TODO: confirm real slug
 };
 
