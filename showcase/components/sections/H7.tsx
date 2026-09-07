@@ -26,8 +26,8 @@ const services: Service[] = [
   },
   {
     name: "1:1 Psychotherapy Session",
-    duration: "60–75 minutes",
-    price: "$175",
+    duration: "60 minutes",
+    price: "$125",
     bookingKey: "session",
     description:
       "In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.",
@@ -35,21 +35,21 @@ const services: Service[] = [
   {
     name: "Deep Immersion",
     duration: "120 minutes",
-    price: "$275",
+    price: "$200",
     bookingKey: "immersion",
     description:
       "An extended session for the work that needs room to unfold. With more time we can move past the opening and stay with what surfaces — deeper process, fuller integration, and space to arrive at something a shorter hour would only begin.",
   },
 ];
 
-// Four 1:1 sessions at $150 each — $100 off the $700 à la carte price.
+// Four 1:1 sessions at $100 each — $100 off the $500 à la carte price.
 // Rendered as a full-width band below the grid rather than a fourth card,
 // so the three-card layout keeps its balance.
 const fourPack = {
   eyebrow: "For those ready to go deeper",
   name: "Four 1:1 Sessions",
-  price: "$600",
-  saving: "$150 per session — a $100 saving on $700",
+  price: "$400",
+  saving: "$100 per session — a $100 saving on $500",
   bookingKey: "fourpack" as BookingKey,
   description:
     "Continuity is where the real work happens. Committing to four sessions lets us build momentum together, returning to the same thread rather than starting fresh each time — supporting your ongoing growth, exploration, integration, and transformation.",

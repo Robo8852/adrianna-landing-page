@@ -31,9 +31,9 @@ export type BookingKey =
 const SERVICE_SLUGS: Record<BookingKey, string | null> = {
   menu: null, // intentional: show all events
   intro: "short-form-consultation-30-min", // ✅ live
-  session: "session-1", // ✅ live (60–75 min)
-  immersion: "deep-immersion", // ✅ live (120 min)
-  fourpack: "four-1-1-sessions", // ✅ live (60 min, first of four)
+  session: "1-1-session-125", // ✅ live (60 min, $125)
+  immersion: "deep-immersion-200", // ✅ live (120 min, $200)
+  fourpack: "four-1-1-sessions-400", // ✅ live (60 min, first of four, $400)
   coaching: null, // TODO: confirm real slug
 };
 
