@@ -228,7 +228,7 @@ export default function FaithfulAltarHero() {
             letterSpacing: "0.02em",
           }}
         >
-          Traditional Psychology&nbsp;•&nbsp;Spiritual Direction&nbsp;•&nbsp;Conservative Counseling
+          Traditional Psychology&nbsp;•&nbsp;Spiritual Direction&nbsp;•&nbsp;Mentorship
         </p>
 
         {/* Practitioner subline */}
