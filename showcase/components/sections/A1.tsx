@@ -7,7 +7,7 @@ export default function A1() {
   return (
     <section
       style={{
-        padding: "8rem 1.5rem 1.5rem",
+        padding: "3rem 1.5rem 1.5rem",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -15,19 +15,31 @@ export default function A1() {
         gap: "2.5rem",
       }}
     >
-      <h1
+      <p
+        style={{
+          margin: 0,
+          fontFamily: "var(--font-cormorant), Georgia, serif",
+          fontSize: "0.78rem",
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: "var(--gold-warm)",
+        }}
+      >
+        Founder
+      </p>
+      <h2
         style={{
           margin: 0,
           fontFamily: "var(--font-cormorant), Georgia, serif",
           fontWeight: 300,
           letterSpacing: "0.01em",
           lineHeight: 1.1,
-          fontSize: "clamp(2.5rem, 6vw, 4rem)",
+          fontSize: "clamp(2rem, 5vw, 3rem)",
           color: "var(--parchment)",
         }}
       >
-        About Judith Adrianna Naílah
-      </h1>
+        Judith Adrianna Naílah
+      </h2>
       <GoldRule width="8rem" />
       <Image
         src="/bio-pic.jpg"
