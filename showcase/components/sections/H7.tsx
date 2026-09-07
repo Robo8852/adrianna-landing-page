@@ -34,7 +34,7 @@ const services: Service[] = [
   },
   {
     name: "Deep Immersion",
-    duration: "90–120 minutes",
+    duration: "120 minutes",
     price: "$275",
     bookingKey: "immersion",
     description:
