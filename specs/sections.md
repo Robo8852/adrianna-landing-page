@@ -35,7 +35,7 @@ Shell: `showcase/app/layout.tsx` (fonts, ConvexClientProvider, HeaderNav, Footer
 
 ## Session addendum 2026-08-21 — hero copy pivot (owner present, dictated)
 
-Tagline: "Traditional Psychology • Spiritual Resilience • Conservative
+Tagline: "Beyond Psychology • Spiritual Resilience • Conservative
 Counseling" (was Spiritual Direction). Positioning line REPLACED CPTSD line:
 "Estrangement, Reconciliation & Restoration — the complex dynamics of family
 rupture, forgiveness, boundaries, and the difficult path back to one another."

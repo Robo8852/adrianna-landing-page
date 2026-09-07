@@ -208,7 +208,7 @@ export default function Hero() {
             letterSpacing: "0.02em",
           }}
         >
-          Traditional Psychology&nbsp;•&nbsp;Spiritual Resilience&nbsp;•&nbsp;Conservative Counseling
+          Beyond Psychology&nbsp;•&nbsp;Spiritual Resilience&nbsp;•&nbsp;Conservative Counseling
         </p>
 
         {/* Brief positioning */}
