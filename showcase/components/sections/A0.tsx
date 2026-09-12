@@ -22,7 +22,7 @@ const emphasisStyle = {
 } as const;
 
 const openingParagraphs = [
-  "We are a community of Catholic and Apostolic faith counselors, mentors, psychotherapists, coaches, spiritual directors, educators, and spiritual companions committed to helping individuals understand themselves more deeply in the light of the Apostolic faith and gospel.",
+  "We are a community of traditional and conservative faith counselors, mentors, psychotherapists, coaches, spiritual directors, educators, and spiritual companions committed to helping individuals understand themselves more deeply in the light of the Apostolic faith and gospel.",
   "Rather than separating faith from science, we seek to integrate the best of psychology and neuroscience with the timeless wisdom of the Apostolic intellectual and spiritual tradition. We believe that understanding the mind is valuable, but understanding the soul is indispensable. Psychology can illuminate the mechanisms of human behavior, while the Gospel reveals the ultimate purpose of the human person.",
   "Just as we have an altar in our Church, and an altar in our homes, we must also have an altar within.",
 ];
