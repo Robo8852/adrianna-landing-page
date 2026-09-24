@@ -54,12 +54,6 @@ const credentials = [
     year: "2020",
     institution: "Centre for Mindfulness Research and Practice, University of Galway",
   },
-  {
-    numeral: "IX",
-    title: "Somatic Experiencing Training — Trauma Reconsolidation",
-    year: "2021–Present",
-    institution: "Somatic Experiencing International",
-  },
 ];
 
 export default function A4() {
