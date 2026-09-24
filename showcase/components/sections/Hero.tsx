@@ -219,7 +219,7 @@ export default function Hero() {
             animationDelay: "2.7s",
           }}
         >
-          Estrangement, Reconciliation &amp; Restoration — the complex dynamics of
+          Reconciliation &amp; Restoration — the complex dynamics of
           family rupture, forgiveness, boundaries, and the difficult path back
           to one another.
         </p>

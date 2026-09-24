@@ -235,7 +235,7 @@ export function NewsletterModal({
                     opacity: 0.95,
                   }}
                 >
-                  Neither is politics.
+                  Neither is therapy.
                   <br />
                   Neither is self-help.
                 </p>
