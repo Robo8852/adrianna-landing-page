@@ -27,7 +27,7 @@ const services: Service[] = [
   {
     name: "1:1 Psychotherapy Session",
     duration: "60 minutes",
-    price: "$125",
+    price: "$120",
     bookingKey: "session",
     description:
       "In these personalized sessions, we dive deeply into your unique needs. Using a blend of science, spirituality, and practical tools, we work together on what matters most to you — your values and your intention for Beyond Therapy.",
@@ -35,7 +35,7 @@ const services: Service[] = [
   {
     name: "Deep Immersion",
     duration: "120 minutes",
-    price: "$200",
+    price: "$250",
     bookingKey: "immersion",
     description:
       "An extended session for the work that needs room to unfold. With more time we can move past the opening and stay with what surfaces — deeper process, fuller integration, and space to arrive at something a shorter hour would only begin.",

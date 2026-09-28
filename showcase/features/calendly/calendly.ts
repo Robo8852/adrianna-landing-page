@@ -1,8 +1,9 @@
 // Single source of truth for Calendly booking links.
 //
-// When Adrianna provides her real event slugs (or an API token to list event
-// types), update SERVICE_SLUGS below — no component changes are needed. Every
-// booking button references a service by BookingKey, never by raw URL.
+// Every booking button references a service by BookingKey, never by raw URL.
+// Slugs are stable routing identifiers, independent of Calendly event titles.
+// Keep them unchanged when removing prices from event titles for Zoom.
+// Website prices are displayed separately in components/sections/H7.tsx.
 
 const ACCOUNT =
   process.env.NEXT_PUBLIC_CALENDLY_URL ?? "https://calendly.com/thealtarwithin";
@@ -22,17 +23,17 @@ export type BookingKey =
 // A null slug resolves to the landing page. For `menu` that is deliberate.
 // For the others it is a fallback until the real event exists on Calendly.
 //
-// Live events verified 2026-08-22 on calendly.com/thealtarwithin:
-//   short-form-consultation-30-min  — 30 min
-//   session-1                       — "1:1 Psychotherapy Session" (60–75 min)
-//   deep-immersion                  — "Deep Immersion", 120 min
-//   four-1-1-sessions               — "Four 1:1 Sessions", 60 min
+// Booking URLs verified 2026-09-14 on calendly.com/thealtarwithin:
+//   short-form-consultation-30-min — 30 min
+//   1-1-session-125                — 60 min
+//   deep-immersion-200             — 120 min
+//   four-1-1-sessions-400           — 60 min
 //   content-creation-podcast-collaboration-inquiry — 45 min (not a service)
 const SERVICE_SLUGS: Record<BookingKey, string | null> = {
   menu: null, // intentional: show all events
   intro: "short-form-consultation-30-min", // ✅ live
-  session: "1-1-session-125", // ✅ live (60 min, $125)
-  immersion: "deep-immersion-200", // ✅ live (120 min, $200)
+  session: "1-1-session-125", // ✅ live (60 min, $120)
+  immersion: "deep-immersion-200", // ✅ live (120 min, $250)
   fourpack: "four-1-1-sessions-400", // ✅ live (60 min, first of four, $400)
   coaching: null, // TODO: confirm real slug
 };
