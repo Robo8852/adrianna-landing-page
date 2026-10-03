@@ -1,6 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(onChange: () => void) {
+  const query = window.matchMedia(reducedMotionQuery);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+function getReducedMotion() {
+  return window.matchMedia(reducedMotionQuery).matches;
+}
+
+function getServerReducedMotion() {
+  return false;
+}
 
 export interface UseRevealOptions {
   threshold?: number;
@@ -21,14 +37,14 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
 
   const ref = useRef<T>(null);
   const [revealed, setRevealed] = useState(false);
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotion,
+    getServerReducedMotion,
+  );
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setRevealed(true);
-      return;
-    }
+    if (reducedMotion) return;
 
     const node = ref.current;
     if (!node) return;
@@ -51,7 +67,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [threshold, rootMargin, once]);
+  }, [threshold, rootMargin, once, reducedMotion]);
 
-  return { ref, revealed } as UseRevealReturn<T>;
+  return { ref, revealed: reducedMotion || revealed } as UseRevealReturn<T>;
 }

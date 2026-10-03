@@ -23,7 +23,7 @@ export function GoldRule({
     <div
       ref={ref}
       aria-hidden="true"
-      className={className}
+      className={["altar-rule", className].filter(Boolean).join(" ")}
       style={{
         width,
         height: "1px",
