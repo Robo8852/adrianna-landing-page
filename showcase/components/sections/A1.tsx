@@ -38,12 +38,12 @@ export default function A1() {
           color: "var(--parchment)",
         }}
       >
-        Judith Adrianna Naílah
+        Adrianna Nailah
       </h2>
       <GoldRule width="8rem" />
       <Image
         src="/bio-pic.jpg"
-        alt="Judith Adrianna Naílah"
+        alt="Adrianna Nailah"
         width={1078}
         height={1080}
         priority

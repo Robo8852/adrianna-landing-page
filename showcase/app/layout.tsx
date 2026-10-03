@@ -21,9 +21,9 @@ const ebGaramond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "The Altar Within — Judith Adrianna Naílah",
+  title: "The Altar Within — Adrianna Nailah",
   description:
-    "Transpersonal & Integration Psychotherapy with Judith Adrianna Naílah. Reflections, practices, and announcements.",
+    "Transpersonal & Integration Psychotherapy with Adrianna Nailah. Reflections, practices, and announcements.",
 };
 
 export default function RootLayout({

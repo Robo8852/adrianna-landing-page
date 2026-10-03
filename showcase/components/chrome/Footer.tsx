@@ -61,7 +61,7 @@ export function Footer() {
           opacity: 0.5,
         }}
       >
-        © 2026 Judith Adrianna Naílah · The Altar Within
+        © 2026 Adrianna Nailah · The Altar Within
       </p>
     </footer>
   );

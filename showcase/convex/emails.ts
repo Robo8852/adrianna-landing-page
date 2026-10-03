@@ -80,7 +80,7 @@ export const sendWelcome = internalAction({
         text: [
           "Your name is on the list.",
           "",
-          "Essays, reflections, and educational resources from Judith Adrianna Naílah will arrive in this inbox — thoughtful letters, never noise.",
+          "Essays, reflections, and educational resources from Adrianna Nailah will arrive in this inbox — thoughtful letters, never noise.",
           "",
           "Lux · Veritas · Forma",
           "The Altar Within",
